@@ -1,20 +1,23 @@
-FROM python:3.9 
+FROM python:3.9-slim
 
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install dependencies with pip upgrade
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy application code
+COPY src/ ./src/
+COPY .env .
 
-# Copy the rest of the application
-COPY . .
-
-# Add environment variables for PayPal credentials
-ENV PAYPAL_CLIENT_ID=""
-ENV PAYPAL_CLIENT_SECRET=""
-ENV PAYPAL_SANDBOX=True
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
 CMD ["python", "src/main.py"]
