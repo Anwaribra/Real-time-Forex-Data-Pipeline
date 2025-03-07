@@ -1,9 +1,8 @@
 ## Real-time Data Pipeline Project
 
 ###  Project Overview
-This project is a **Real-time & Historical Data Pipeline** designed to fetch currency exchange rates from the **Alpha Vantage API**, transform the data into structured formats, and prepare it for analysis. The pipeline follows the ETL (Extract, Transform, Load) process.
+This project is a **Real-time & Historical Data Pipeline** designed to fetch currency exchange rates from the [**Alpha Vantage API**](https://www.alphavantage.co), transform the data into structured formats, and prepare it for analysis. The pipeline follows the ETL (Extract, Transform, Load) process.
 
----
 
 ##  Structure
 ```plaintext
