@@ -96,29 +96,7 @@ The pipeline includes comprehensive error handling for:
 - Real-time data: 5 API calls per minute
 - Historical data: 15 seconds between requests
 
-### Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
-
-### License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 
-##  Structure
-```plaintext
-Real-time Data Pipeline/
-├── data_ingestion/              # Scripts to fetch real-time & historical data
-│   ├─ fetch_data.py             # Real-time data fetcher (current rates)
-│   └─ fetch_historical_data.py  # Historical data fetcher (daily rates)
-├── data_transformation/          # Scripts to clean & transform data
-│   └─ transform_data.py         # Transformation logic for historical data
-├── data/                         # Raw data storage (fetched JSON files)
-├── processed_data/               # Transformed data storage (cleaned CSV files)
-├── config/                       # Configuration files (API key, currency pairs)
-│   └─ config.json
+
 
