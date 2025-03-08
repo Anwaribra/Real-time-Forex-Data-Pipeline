@@ -22,7 +22,7 @@ with DAG(
     catchup=False,
 ) as dag:
     
-    # Task to fetch real-time forex data
+    
     def fetch_forex_data():
         script_path = os.path.join(os.getcwd(), 'data_ingestion/fetch_data.py')
         subprocess.run(['python', script_path], check=True)
@@ -52,7 +52,7 @@ with DAG(
         python_callable=transform_data,
     )
     
-    # Task to save data to CSV
+   
     def save_data():
         script_path = os.path.join(os.getcwd(), 'data_storage/save_to_csv.py')
         subprocess.run(['python', script_path], check=True)
@@ -62,5 +62,5 @@ with DAG(
         python_callable=save_data,
     )
     
-    # Define Task Dependencies
+    
     fetch_data_task >> fetch_historical_task >> transform_data_task >> save_data_task

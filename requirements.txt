@@ -1,4 +1,5 @@
 pandas
-requests
+requests>=2.31.0
 # matplotlib
 airflow
+python-dotenv>=1.0.0
