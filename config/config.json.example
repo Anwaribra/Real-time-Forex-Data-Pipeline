@@ -1,6 +1,6 @@
 {
     "forex_api_url": "https://www.alphavantage.co/query",
-    "forex_api_key": "${FOREX_API_KEY}",
+    "forex_api_key": "YOUR_API_KEY_HERE",
     "currency_pairs": [
         "EUR/USD",
         "USD/EGP",
@@ -8,4 +8,4 @@
     ],
     "hdfs_url": "http://localhost:9870/webhdfs/v1",
     "hdfs_path": "/forex_data/"
-}
+} 

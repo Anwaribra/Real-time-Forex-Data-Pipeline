@@ -40,18 +40,40 @@ Real-time Data Pipeline/
 pip install -r requirements.txt
 ```
 
-3. Configure API settings in `config/config.json`:
-```json
-{
-    "forex_api_url": "https://www.alphavantage.co/query",
-    "forex_api_key": "YOUR_API_KEY",
-    "currency_pairs": [
-        "EUR/USD",
-        "USD/EGP",
-        "EUR/EGP"
-    ]
-}
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env and add your API key
 ```
+
+4. Configure settings:
+```bash
+cp config/config.json.example config/config.json
+```
+
+5. Create required directories:
+```bash
+mkdir -p data processed_data logs
+```
+
+### For Collaborators
+
+1. Prevent tracking sensitive files:
+```bash
+git update-index --assume-unchanged config/config.json
+```
+
+2. Set up your environment:
+```bash
+cp .env.example .env
+# Add your API key to .env file
+```
+
+3. Important: Do not commit these files:
+- `.env` (contains sensitive API keys)
+- `logs/*` (local logs)
+- `data/*` (raw data)
+- `processed_data/*` (processed data)
 
 ### Usage
 
@@ -70,11 +92,18 @@ python data_ingestion/fetch_historical_data.py
 python data_storage/save_to_csv.py
 ```
 
+4. Run the complete pipeline:
+```bash
+python main_pipeline.py
+```
+
 ### Data Files
 
 - **Real-time Data**: `data/realtime_[FROM]_[TO].json`
 - **Historical Data**: `data/historical_[FROM]_[TO].json`
 - **Processed CSV**: `processed_data/[realtime|historical]_[FROM]_[TO].csv`
+- **Yearly Analysis**: `processed_data/yearly/yearly_[FROM]_[TO].csv`
+- **Summary Reports**: `processed_data/yearly/summary_[FROM]_[TO].csv`
 
 ### Logging
 
@@ -95,3 +124,12 @@ The pipeline includes comprehensive error handling for:
 
 - Real-time data: 5 API calls per minute
 - Historical data: 15 seconds between requests
+
+### Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
+
