@@ -60,7 +60,7 @@ def save_realtime_to_csv(data: Dict, pair: str, output_dir: Optional[Path] = Non
             logger.warning(f"Invalid or missing real-time data for {pair}")
             return
         
-        # Set up output directory
+        
         output_dir = output_dir or Path("processed_data")
         output_dir.mkdir(exist_ok=True)
         
@@ -71,7 +71,7 @@ def save_realtime_to_csv(data: Dict, pair: str, output_dir: Optional[Path] = Non
         df = pd.DataFrame([structured_data])
         filename = output_dir / f"realtime_{pair.replace('/', '_')}.csv"
         
-        # Append or create new CSV
+        
         df.to_csv(filename, mode="a", index=False, header=not filename.exists())
         logger.info(f"Real-time data saved to {filename}")
         

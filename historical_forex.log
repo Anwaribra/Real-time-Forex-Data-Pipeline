@@ -10,3 +10,17 @@
 2025-03-08 22:44:36,274 - INFO - Fetching historical data for EUR/EGP
 2025-03-08 22:44:37,119 - INFO - Saved historical data to data/historical_EUR_EGP.json
 2025-03-08 22:44:52,133 - INFO - Historical data fetch completed
+2025-03-08 23:19:45,749 - INFO - Fetching historical data for EUR/USD
+2025-03-08 23:19:47,182 - INFO - Saved historical data to data/historical_EUR_USD.json
+2025-03-08 23:20:02,182 - INFO - Fetching historical data for USD/EGP
+2025-03-08 23:20:03,324 - INFO - Saved historical data to data/historical_USD_EGP.json
+2025-03-08 23:20:18,325 - INFO - Fetching historical data for EUR/EGP
+2025-03-08 23:20:19,430 - INFO - Saved historical data to data/historical_EUR_EGP.json
+2025-03-08 23:20:34,430 - INFO - Historical data fetch completed
+2025-03-08 23:33:45,157 - INFO - Fetching historical data for EUR/USD
+2025-03-08 23:33:46,371 - INFO - Saved historical data to data/historical_EUR_USD.json
+2025-03-08 23:34:01,371 - INFO - Fetching historical data for USD/EGP
+2025-03-08 23:34:04,204 - INFO - Saved historical data to data/historical_USD_EGP.json
+2025-03-08 23:34:19,205 - INFO - Fetching historical data for EUR/EGP
+2025-03-08 23:34:20,369 - INFO - Saved historical data to data/historical_EUR_EGP.json
+2025-03-08 23:34:35,369 - INFO - Historical data fetch completed
