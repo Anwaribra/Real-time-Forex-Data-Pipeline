@@ -1,0 +1,13 @@
+{
+    "Realtime Currency Exchange Rate": {
+        "1. From_Currency Code": "EUR",
+        "2. From_Currency Name": "Euro",
+        "3. To_Currency Code": "EGP",
+        "4. To_Currency Name": "Egyptian Pound",
+        "5. Exchange Rate": "54.94220000",
+        "6. Last Refreshed": "2025-03-09 00:24:40",
+        "7. Time Zone": "UTC",
+        "8. Bid Price": "54.93996000",
+        "9. Ask Price": "54.94334000"
+    }
+}

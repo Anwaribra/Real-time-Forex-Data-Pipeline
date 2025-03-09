@@ -1,0 +1,62 @@
+2025-03-09 02:19:12,700 - __main__ - INFO - Starting forex data pipeline
+2025-03-09 02:19:12,701 - __main__ - INFO - Fetching real-time forex data
+2025-03-09 02:19:14,370 - data_ingestion.fetch_data - INFO - Data fetched for EUR/USD
+2025-03-09 02:19:14,375 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_USD.json
+2025-03-09 02:19:16,422 - data_ingestion.fetch_data - INFO - Data fetched for USD/EGP
+2025-03-09 02:19:16,425 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_USD_EGP.json
+2025-03-09 02:19:18,907 - data_ingestion.fetch_data - INFO - Data fetched for EUR/EGP
+2025-03-09 02:19:18,909 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_EGP.json
+2025-03-09 02:19:19,411 - __main__ - INFO - Fetching historical forex data
+2025-03-09 02:19:19,412 - __main__ - ERROR - Pipeline failed: fetch_historical_data() missing 2 required positional arguments: 'from_currency' and 'to_currency'
+2025-03-09 02:19:19,412 - root - ERROR - Pipeline execution failed: fetch_historical_data() missing 2 required positional arguments: 'from_currency' and 'to_currency'
+2025-03-09 02:20:03,414 - __main__ - INFO - Starting forex data pipeline
+2025-03-09 02:20:03,415 - __main__ - INFO - Fetching real-time forex data
+2025-03-09 02:20:06,138 - data_ingestion.fetch_data - INFO - Data fetched for EUR/USD
+2025-03-09 02:20:06,139 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_USD.json
+2025-03-09 02:20:09,484 - data_ingestion.fetch_data - INFO - Data fetched for USD/EGP
+2025-03-09 02:20:09,486 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_USD_EGP.json
+2025-03-09 02:20:11,783 - data_ingestion.fetch_data - INFO - Data fetched for EUR/EGP
+2025-03-09 02:20:11,785 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_EGP.json
+2025-03-09 02:20:12,287 - __main__ - INFO - Fetching historical forex data
+2025-03-09 02:20:12,288 - __main__ - INFO - Fetching historical data for EUR/USD
+2025-03-09 02:20:12,288 - __main__ - ERROR - Pipeline failed: name 'API_KEY' is not defined
+2025-03-09 02:20:12,289 - root - ERROR - Pipeline execution failed: name 'API_KEY' is not defined
+2025-03-09 02:22:52,094 - __main__ - INFO - Starting forex data pipeline
+2025-03-09 02:22:52,096 - __main__ - INFO - Fetching real-time forex data
+2025-03-09 02:22:53,434 - data_ingestion.fetch_data - INFO - Data fetched for EUR/USD
+2025-03-09 02:22:53,435 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_USD.json
+2025-03-09 02:22:56,134 - data_ingestion.fetch_data - INFO - Data fetched for USD/EGP
+2025-03-09 02:22:56,136 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_USD_EGP.json
+2025-03-09 02:22:58,246 - data_ingestion.fetch_data - INFO - Data fetched for EUR/EGP
+2025-03-09 02:22:58,248 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_EGP.json
+2025-03-09 02:22:58,750 - __main__ - INFO - Fetching historical forex data
+2025-03-09 02:22:58,751 - __main__ - INFO - Fetching historical data for EUR/USD
+2025-03-09 02:22:58,751 - __main__ - ERROR - Pipeline failed: name 'API_KEY' is not defined
+2025-03-09 02:22:58,752 - root - ERROR - Pipeline execution failed: name 'API_KEY' is not defined
+2025-03-09 02:24:33,648 - __main__ - INFO - Starting forex data pipeline
+2025-03-09 02:24:33,649 - __main__ - INFO - Fetching real-time forex data
+2025-03-09 02:24:35,365 - data_ingestion.fetch_data - INFO - Data fetched for EUR/USD
+2025-03-09 02:24:35,367 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_USD.json
+2025-03-09 02:24:37,566 - data_ingestion.fetch_data - INFO - Data fetched for USD/EGP
+2025-03-09 02:24:37,567 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_USD_EGP.json
+2025-03-09 02:24:40,136 - data_ingestion.fetch_data - INFO - Data fetched for EUR/EGP
+2025-03-09 02:24:40,137 - data_ingestion.fetch_data - INFO - Data saved to /mnt/mydata/Data/Internships/DEPI/Real-time Data Pipeline/data/realtime_EUR_EGP.json
+2025-03-09 02:24:40,639 - __main__ - INFO - Fetching historical forex data
+2025-03-09 02:24:40,640 - __main__ - INFO - Fetching historical data for EUR/USD
+2025-03-09 02:24:40,640 - data_ingestion.fetch_historical_data - INFO - Fetching historical data for EUR/USD
+2025-03-09 02:24:42,129 - __main__ - INFO - Successfully fetched historical data for EUR/USD
+2025-03-09 02:24:57,130 - __main__ - INFO - Fetching historical data for USD/EGP
+2025-03-09 02:24:57,130 - data_ingestion.fetch_historical_data - INFO - Fetching historical data for USD/EGP
+2025-03-09 02:25:00,664 - __main__ - INFO - Successfully fetched historical data for USD/EGP
+2025-03-09 02:25:15,664 - __main__ - INFO - Fetching historical data for EUR/EGP
+2025-03-09 02:25:15,665 - data_ingestion.fetch_historical_data - INFO - Fetching historical data for EUR/EGP
+2025-03-09 02:25:16,610 - __main__ - INFO - Successfully fetched historical data for EUR/EGP
+2025-03-09 02:25:31,610 - __main__ - INFO - Processing all forex data
+2025-03-09 02:25:31,626 - data_storage.save_to_csv - INFO - Real-time data saved to processed_data/realtime_EGP_USD.csv
+2025-03-09 02:25:31,635 - data_storage.save_to_csv - INFO - Real-time data saved to processed_data/realtime_EUR_EGP.csv
+2025-03-09 02:25:31,642 - data_storage.save_to_csv - INFO - Real-time data saved to processed_data/realtime_EUR_USD.csv
+2025-03-09 02:25:31,650 - data_storage.save_to_csv - INFO - Real-time data saved to processed_data/realtime_USD_EGP.csv
+2025-03-09 02:25:31,692 - data_storage.save_to_csv - INFO - Historical data saved to processed_data/historical_EUR_EGP.csv
+2025-03-09 02:25:31,744 - data_storage.save_to_csv - INFO - Historical data saved to processed_data/historical_EUR_USD.csv
+2025-03-09 02:25:31,762 - data_storage.save_to_csv - INFO - Historical data saved to processed_data/historical_USD_EGP.csv
+2025-03-09 02:25:31,763 - __main__ - INFO - Pipeline completed successfully
