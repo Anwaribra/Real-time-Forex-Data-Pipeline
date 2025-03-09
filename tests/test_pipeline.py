@@ -3,7 +3,7 @@ import sys
 import pytest
 from pathlib import Path
 
-# Add project root to Python path
+\
 project_root = str(Path(__file__).parent.parent)
 sys.path.insert(0, project_root)
 
@@ -11,7 +11,7 @@ from data_ingestion.fetch_data import fetch_forex_data
 from data_ingestion.fetch_historical_data import fetch_historical_data
 from dotenv import load_dotenv
 
-# Load environment variables
+
 load_dotenv()
 
 def test_config_exists():
@@ -25,7 +25,7 @@ def test_fetch_forex_data():
     try:
         data = fetch_forex_data()
         assert data is not None
-        # Check if we got data for at least one currency pair
+        
         assert len(data) > 0
     except Exception as e:
         pytest.fail(f"fetch_forex_data failed: {str(e)}")
