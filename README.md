@@ -95,11 +95,3 @@ The pipeline includes comprehensive error handling for:
 
 - Real-time data: 5 API calls per minute
 - Historical data: 15 seconds between requests
-
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> 5fc1393 (Up)
