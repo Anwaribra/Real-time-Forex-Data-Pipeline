@@ -3,3 +3,5 @@ requests>=2.31.0
 # matplotlib
 airflow
 python-dotenv>=1.0.0
+pytest==7.2.1
+flake8==5.0.4
