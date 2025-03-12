@@ -69,11 +69,6 @@ cp .env.example .env
 # Add your API key to .env file
 ```
 
-3. Important: Do not commit these files:
-- `.env` (contains sensitive API keys)
-- `logs/*` (local logs)
-- `data/*` (raw data)
-- `processed_data/*` (processed data)
 
 ### Usage
 
