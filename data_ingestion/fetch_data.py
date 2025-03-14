@@ -60,8 +60,8 @@ def fetch_forex_data() -> None:
                     "apikey": api_key
                 }
 
-                # Add delay to respect rate limits
-                time.sleep(1)  # Adjust based on API rate limits
+                
+                time.sleep(1)  
 
                 response = requests.get(base_url, params=params, timeout=10)
                 response.raise_for_status()
@@ -83,7 +83,7 @@ def fetch_forex_data() -> None:
             except Exception as e:
                 logger.error(f"Error processing {pair}: {str(e)}")
                 
-            # Add delay between requests
+            
             time.sleep(0.5)
 
     except Exception as e:

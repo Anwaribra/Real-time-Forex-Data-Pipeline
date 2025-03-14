@@ -46,7 +46,7 @@ def fetch_historical_data(from_currency, to_currency, outputsize="full"):
         
         data = response.json()
         
-        # Validate response data
+        
         if "Error Message" in data:
             logger.error(f"API Error for {from_currency}/{to_currency}: {data['Error Message']}")
             return None
