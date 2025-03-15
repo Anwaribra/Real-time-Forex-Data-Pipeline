@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 import json
 import time
+from kafka import KafkaProducer, KafkaConsumer
 
 from data_ingestion.fetch_data import fetch_forex_data
 from data_ingestion.fetch_historical_data import fetch_historical_data
@@ -29,55 +30,121 @@ def load_config():
     with open("config/config.json", "r") as f:
         return json.load(f)
 
+class ForexKafkaHandler:
+    def __init__(self):
+        self.producer = KafkaProducer(
+            bootstrap_servers=['kafka:29092'],
+            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            retries=5,
+            retry_backoff_ms=1000
+        )
+        self.forex_topic = 'forex_data'
+        
+    def send_forex_data(self, currency_pair: str, data: dict):
+        """Send forex data to Kafka topic"""
+        try:
+            message = {
+                'currency_pair': currency_pair,
+                'timestamp': datetime.now().isoformat(),
+                'data': data
+            }
+            self.producer.send(self.forex_topic, message)
+            self.producer.flush()
+            logging.info(f"Sent forex data for {currency_pair} to Kafka")
+        except Exception as e:
+            logging.error(f"Failed to send data to Kafka: {str(e)}")
+
+    def process_forex_data(self):
+        """Process forex data from Kafka topic"""
+        consumer = KafkaConsumer(
+            self.forex_topic,
+            bootstrap_servers=['kafka:29092'],
+            auto_offset_reset='earliest',
+            enable_auto_commit=True,
+            group_id='forex_processor',
+            value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+            session_timeout_ms=45000,
+            heartbeat_interval_ms=15000
+        )
+        
+        try:
+            for message in consumer:
+                data = message.value
+                # Process the forex data
+                currency_pair = data['currency_pair']
+                forex_data = data['data']
+                
+                # Save to CSV or perform other processing
+                self._save_processed_data(currency_pair, forex_data)
+                
+        except Exception as e:
+            logging.error(f"Error processing Kafka messages: {str(e)}")
+        finally:
+            consumer.close()
+
+    def _save_processed_data(self, currency_pair: str, data: dict):
+        """Save processed forex data"""
+        try:
+            # Implementation for saving data
+            processed_dir = Path("processed_data")
+            processed_dir.mkdir(exist_ok=True)
+            
+            filename = f"{currency_pair}_{datetime.now().strftime('%Y%m%d')}.json"
+            filepath = processed_dir / filename
+            
+            with open(filepath, 'a') as f:
+                json.dump(data, f)
+                f.write('\n')
+                
+            logging.info(f"Saved processed data for {currency_pair}")
+        except Exception as e:
+            logging.error(f"Failed to save processed data: {str(e)}")
+
+def check_kafka_connection(bootstrap_servers):
+    """Check if Kafka is available"""
+    try:
+        producer = KafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+        )
+        producer.close()
+        return True
+    except Exception as e:
+        logging.error(f"Kafka connection failed: {str(e)}")
+        return False
+
 def run_pipeline(fetch_realtime: bool = True, fetch_historical: bool = True, 
                 transform: bool = True) -> None:
     """
-    Run the complete data pipeline.
-    
-    Args:
-        fetch_realtime: Whether to fetch real-time data
-        fetch_historical: Whether to fetch historical data
-        transform: Whether to transform and analyze data
+    Run the complete data pipeline with Kafka integration.
     """
     logger = logging.getLogger(__name__)
     logger.info("Starting forex data pipeline")
     
     try:
+        # Check Kafka connection before starting
+        if not check_kafka_connection(['kafka:29092']):
+            raise Exception("Cannot connect to Kafka broker")
+            
+        # Initialize Kafka handler
+        kafka_handler = ForexKafkaHandler()
+        
         # Load configuration
         config = load_config()
         currency_pairs = config["currency_pairs"]
-        api_url = config["forex_api_url"]
-        api_key = config["forex_api_key"]
         
-        # Ensure directories exist
-        Path("data").mkdir(exist_ok=True)
-        Path("processed_data").mkdir(exist_ok=True)
-        
-        # Fetch real-time data
+        # Fetch and send real-time data to Kafka
         if fetch_realtime:
             logger.info("Fetching real-time forex data")
-            fetch_forex_data()
-        
-        # Fetch historical data
-        if fetch_historical:
-            logger.info("Fetching historical forex data")
             for pair in currency_pairs:
-                from_currency, to_currency = pair.split('/')
-                logger.info(f"Fetching historical data for {pair}")
-                data = fetch_historical_data(
-                    from_currency=from_currency,
-                    to_currency=to_currency,
-                    api_key=api_key,
-                    api_url=api_url
-                )
+                data = fetch_forex_data()  # Your existing fetch function
                 if data:
-                    logger.info(f"Successfully fetched historical data for {pair}")
-                time.sleep(15)  # Respect API rate limits
+                    kafka_handler.send_forex_data(pair, data)
         
-        # Transform and analyze data
+        # Process data from Kafka
         if transform:
-            logger.info("Processing all forex data")
-            process_all_forex_data()
+            logger.info("Processing forex data from Kafka")
+            kafka_handler.process_forex_data()
         
         logger.info("Pipeline completed successfully")
         
@@ -121,6 +188,22 @@ def cleanup_old_files(days: Optional[int] = 7) -> None:
         
     except Exception as e:
         logger.error(f"Cleanup failed: {str(e)}")
+
+# Producer example
+producer = KafkaProducer(
+    bootstrap_servers=['localhost:9092'],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
+
+# Consumer example
+consumer = KafkaConsumer(
+    'your_topic_name',
+    bootstrap_servers=['localhost:9092'],
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+    group_id='your_consumer_group',
+    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+)
 
 if __name__ == "__main__":
     # Set up logging
