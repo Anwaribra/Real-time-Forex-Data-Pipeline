@@ -13,6 +13,9 @@ processed_data/
 # Environment variables
 .env
 
+# Actual config with sensitive data
+config/config.json
+
 # Python
 __pycache__/
 *.py[cod]

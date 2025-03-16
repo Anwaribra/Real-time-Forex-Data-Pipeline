@@ -3,8 +3,14 @@ import pandas as pd
 import json
 import logging
 from pathlib import Path
-from kafka import KafkaConsumer
-from json import loads
+
+try:
+    from kafka import KafkaConsumer
+    from json import loads
+    KAFKA_AVAILABLE = True
+except ImportError:
+    KAFKA_AVAILABLE = False
+    logging.warning("Kafka package not found. Kafka functionality will be disabled.")
 
 def setup_logging():
     """Configure logging settings"""
@@ -13,9 +19,9 @@ def setup_logging():
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
 
-def save_data_to_csv():
+def process_all_forex_data(forex_data, historical_data):
     """
-    Receive data from Kafka and save it to CSV files
+    Process and save forex data to CSV files
     """
     logger = logging.getLogger(__name__)
     setup_logging()
@@ -23,6 +29,40 @@ def save_data_to_csv():
     # Create output directory for processed data
     output_dir = Path("processed_data")
     output_dir.mkdir(exist_ok=True)
+    
+    try:
+        # Process and save forex data
+        if forex_data:
+            df = pd.DataFrame(forex_data)
+            output_file = output_dir / "realtime_forex_data.csv"
+            df.to_csv(output_file, index=False)
+            logger.info(f"Saved realtime forex data to {output_file}")
+        
+        # Process and save historical data
+        if historical_data:
+            df = pd.DataFrame(historical_data)
+            output_file = output_dir / "historical_forex_data.csv"
+            df.to_csv(output_file, index=False)
+            logger.info(f"Saved historical forex data to {output_file}")
+    
+    except Exception as e:
+        logger.error(f"Error processing forex data: {str(e)}")
+        raise
+
+def save_data_to_csv():
+    """
+    Receive data and save it to CSV files
+    """
+    logger = logging.getLogger(__name__)
+    setup_logging()
+    
+    # Create output directory for processed data
+    output_dir = Path("processed_data")
+    output_dir.mkdir(exist_ok=True)
+    
+    if not KAFKA_AVAILABLE:
+        logger.error("Kafka functionality is not available. Please install kafka-python package.")
+        return
     
     # Setup Kafka Consumer
     consumer = KafkaConsumer(
@@ -79,7 +119,8 @@ def save_data_to_csv():
         logger.error(f"Error connecting to Kafka: {str(e)}")
         raise
     finally:
-        consumer.close()
+        if 'consumer' in locals():
+            consumer.close()
 
 if __name__ == '__main__':
     save_data_to_csv()

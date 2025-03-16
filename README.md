@@ -188,3 +188,29 @@ pip freeze > requirements.txt
 docker-compose up --build
 ```
 
+## Snowflake Setup
+
+The project uses Snowflake as a data warehouse. To set up Snowflake:
+
+1. Create a Snowflake account or use your existing one
+2. Create a database, schema, and warehouse in Snowflake
+3. Update the `config/config.json` file with your Snowflake settings
+
+### Data Structure in Snowflake
+
+The project creates the following tables in Snowflake:
+
+- `historical_rates_{currency_pair}`: Historical data for each currency pair
+- `realtime_rates`: Real-time exchange rate data for all currency pairs
+
+## Configuration
+
+This project uses a combination of configuration files and environment variables for settings:
+
+1. Copy `config/config.json.example` to `config/config.json`
+2. Copy `.env.example` to `.env` (if it exists)
+3. Update the values in `.env` with your credentials
+4. Never commit `config/config.json` or `.env` to version control
+
+The configuration uses environment variable substitution, so sensitive data can be stored in `.env` and referenced in `config.json` using `${VARIABLE_NAME}` syntax.
+
