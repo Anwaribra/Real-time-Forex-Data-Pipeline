@@ -5,16 +5,14 @@ from datetime import datetime, timedelta
 import logging
 from pathlib import Path
 import os
+from kafka import KafkaProducer
+from json import dumps
 
 def setup_logging():
-    """Configure logging settings."""
+    """Configure logging settings"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler('historical_forex.log'),
-            logging.StreamHandler()
-        ]
+        format='%(asctime)s - %(levelname)s - %(message)s'
     )
 
 def load_config():
@@ -110,5 +108,39 @@ def save_historical_data_to_json(pair, data):
     except Exception as e:
         logger.error(f"Error saving data for {pair}: {str(e)}")
 
+def fetch_forex_data():
+    """
+    Fetch currency data and send it to Kafka
+    """
+    logger = logging.getLogger(__name__)
+    setup_logging()
+    
+    # Setup Kafka Producer
+    producer = KafkaProducer(
+        bootstrap_servers=['localhost:9092'],
+        value_serializer=lambda x: dumps(x).encode('utf-8')
+    )
+    
+    pairs = ['EUR_EGP', 'USD_EGP', 'EUR_USD']
+    base_url = "https://api.example.com/forex"  # Replace with actual API URL
+    
+    try:
+        for pair in pairs:
+            try:
+                response = requests.get(f"{base_url}/{pair}")
+                data = response.json()
+                
+                # Send data to Kafka
+                producer.send('forex_data', value=data)
+                logger.info(f"Sent {pair} data to Kafka")
+                
+            except Exception as e:
+                logger.error(f"Error fetching data for {pair}: {str(e)}")
+                
+    except Exception as e:
+        logger.error(f"General error: {str(e)}")
+    finally:
+        producer.close()
+
 if __name__ == "__main__":
-    fetch_historical_data()
+    fetch_forex_data()

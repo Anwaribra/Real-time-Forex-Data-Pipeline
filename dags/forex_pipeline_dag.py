@@ -1,14 +1,19 @@
+import os
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+project_root = str(Path(__file__).parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.models import Variable
 from datetime import datetime, timedelta
-import os
-import sys
-from pathlib import Path
 import logging
-
-# Add project root to Python path
-sys.path.append(str(Path(__file__).parent.parent))
+from data_ingestion.fetch_historical_data import fetch_forex_data
+from data_storage.save_to_csv import save_data_to_csv
 
 # Import your modules
 from data_ingestion.fetch_data import fetch_forex_data
@@ -60,80 +65,37 @@ def save_data_wrapper(**context):
 
 # Define DAG
 default_args = {
-    'owner': 'anwar',
+    'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2024, 3, 8),
+    'start_date': datetime(2024, 1, 1),
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'retry_exponential_backoff': True,
-    'max_retry_delay': timedelta(minutes=30),
-    'execution_timeout': timedelta(minutes=10),
 }
 
-# Create DAG
-with DAG(
-    dag_id='forex_data_pipeline',
+dag = DAG(
+    'forex_pipeline',
     default_args=default_args,
-    description='A DAG to fetch, transform, and store Forex data daily',
-    schedule='@daily',
-    catchup=False,
-    tags=['forex', 'data_pipeline'],
-    doc_md="""
-    # Forex Data Pipeline DAG
-    
-    This DAG performs the following operations:
-    1. Fetches real-time forex data
-    2. Fetches historical forex data
-    3. Processes and saves the data
-    
-    ## Dependencies
-    - Alpha Vantage API
-    - Kafka (for streaming)
-    - PostgreSQL (for storage)
-    
-    ## Configuration
-    The DAG uses environment variables for configuration:
-    - ALPHA_VANTAGE_API_KEY: API key for Alpha Vantage
-    """,
-) as dag:
-    
-    # Task to fetch real-time forex data
-    fetch_data_task = PythonOperator(
-        task_id='fetch_forex_data',
-        python_callable=fetch_data_wrapper,
-        provide_context=True,
-        doc_md="""
-        ### Fetch Real-time Forex Data
-        Fetches current exchange rates from Alpha Vantage API
-        """,
-    )
-    
-    # Task to fetch historical forex data
-    fetch_historical_task = PythonOperator(
-        task_id='fetch_historical_data',
-        python_callable=fetch_historical_wrapper,
-        provide_context=True,
-        doc_md="""
-        ### Fetch Historical Forex Data
-        Fetches historical exchange rates data
-        """,
-    )
-    
-    # Task to save data
-    save_data_task = PythonOperator(
-        task_id='save_forex_data',
-        python_callable=save_data_wrapper,
-        provide_context=True,
-        doc_md="""
-        ### Save Forex Data
-        Processes and saves both real-time and historical data
-        """,
-    )
-    
-    # Set task dependencies
-    fetch_data_task >> fetch_historical_task >> save_data_task
+    description='Fetch and store currency data',
+    schedule_interval=timedelta(days=1),
+)
+
+# Data fetch task
+fetch_task = PythonOperator(
+    task_id='fetch_forex_data',
+    python_callable=fetch_forex_data,
+    dag=dag,
+)
+
+# Data save task
+save_task = PythonOperator(
+    task_id='save_forex_data',
+    python_callable=save_data_to_csv,
+    dag=dag,
+)
+
+fetch_task >> save_task
 
 # For local testing
 if __name__ == "__main__":
