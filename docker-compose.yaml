@@ -48,14 +48,18 @@ x-airflow-common:
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    PYTHONPATH: /opt/airflow
+    ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY}
+    AIRFLOW_UID: ${AIRFLOW_UID:-50000}
+    AIRFLOW_GID: ${AIRFLOW_GID:-0}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
-  user: "${AIRFLOW_UID:-50000}:0"
+  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
   depends_on:
     postgres:
       condition: service_healthy
@@ -77,6 +81,11 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./data_ingestion:/opt/airflow/data_ingestion
+      - ./data_transformation:/opt/airflow/data_transformation
+      - ./data_storage:/opt/airflow/data_storage
     command: webserver
     ports:
       - 8081:8080
@@ -95,6 +104,11 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./data_ingestion:/opt/airflow/data_ingestion
+      - ./data_transformation:/opt/airflow/data_transformation
+      - ./data_storage:/opt/airflow/data_storage
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
       interval: 10s
@@ -114,7 +128,7 @@ services:
       - -c
       - |
         mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        chown -R "${AIRFLOW_UID}:${AIRFLOW_GID:-0}" /sources/{logs,dags,plugins}
         exec /entrypoint airflow version
     environment:
       <<: *airflow-common-env
