@@ -166,11 +166,17 @@ services:
   app:
     build: .
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       - app-network
     volumes:
       - .:/app
+    healthcheck:
+      test: ["CMD", "python", "-c", "from kafka import KafkaProducer; KafkaProducer(bootstrap_servers=['kafka:29092'])"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres-db-volume:

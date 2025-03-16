@@ -205,11 +205,57 @@ consumer = KafkaConsumer(
     value_deserializer=lambda x: json.loads(x.decode('utf-8'))
 )
 
+def test_kafka_connection():
+    """Test Kafka producer and consumer"""
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Test producer
+        producer = KafkaProducer(
+            bootstrap_servers=['kafka:29092'],
+            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            retries=5,
+            retry_backoff_ms=1000
+        )
+        
+        # Send test message
+        test_message = {"test": "Hello Kafka!"}
+        producer.send('test-topic', test_message)
+        producer.flush()
+        logger.info("Test message sent successfully")
+        
+        # Test consumer
+        consumer = KafkaConsumer(
+            'test-topic',
+            bootstrap_servers=['kafka:29092'],
+            auto_offset_reset='earliest',
+            group_id='test-group',
+            value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+            consumer_timeout_ms=5000  # Wait 5 seconds for messages
+        )
+        
+        # Try to read the message
+        for message in consumer:
+            logger.info(f"Received test message: {message.value}")
+            return True
+            
+        return False
+    except Exception as e:
+        logger.error(f"Kafka test failed: {str(e)}")
+        return False
+    finally:
+        producer.close()
+        consumer.close()
+
 if __name__ == "__main__":
     # Set up logging
     setup_logging()
     
     try:
+        # Test Kafka connection first
+        if not test_kafka_connection():
+            raise Exception("Kafka connection test failed")
+            
         # Run the complete pipeline
         run_pipeline(
             fetch_realtime=True,
