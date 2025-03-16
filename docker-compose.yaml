@@ -41,16 +41,22 @@
 version: '3'
 x-airflow-common:
   &airflow-common
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.3.2}
+  image: apache/airflow:2.3.2
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    _PIP_ADDITIONAL_REQUIREMENTS: >
+      pandas
+      requests
+      python-dotenv
+      kafka-python
+      confluent-kafka
+      apache-airflow==${AIRFLOW_VERSION}
     PYTHONPATH: /opt/airflow
     ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY}
     AIRFLOW_UID: ${AIRFLOW_UID:-50000}
@@ -128,14 +134,22 @@ services:
       - -c
       - |
         mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:${AIRFLOW_GID:-0}" /sources/{logs,dags,plugins}
-        exec /entrypoint airflow version
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        pip install --upgrade pip
+        pip install apache-airflow==${AIRFLOW_VERSION:-2.3.2}
+        airflow db init && \
+        airflow users create \
+          --username ${_AIRFLOW_WWW_USER_USERNAME:-airflow} \
+          --firstname ${_AIRFLOW_FIRSTNAME:-airflow} \
+          --lastname ${_AIRFLOW_LASTNAME:-airflow} \
+          --role Admin \
+          --email ${_AIRFLOW_EMAIL:-airflow@example.com} \
+          --password ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_UPGRADE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
-      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      AIRFLOW_VERSION: '2.3.2'
     user: "0:0"
     volumes:
       - .:/sources

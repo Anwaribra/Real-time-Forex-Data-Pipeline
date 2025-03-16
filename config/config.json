@@ -1,11 +1,11 @@
 {
     "forex_api_url": "https://www.alphavantage.co/query",
-    "forex_api_key": "${FOREX_API_KEY}",
+    "forex_api_key": "${UY7INDCN4HZXSJJX}",
     "currency_pairs": [
         "EUR/USD",
         "USD/EGP",
         "EUR/EGP"
     ],
-    "hdfs_url": "http://localhost:9870/webhdfs/v1",
-    "hdfs_path": "/forex_data/"
+    "kafka_bootstrap_servers": "localhost:9092",
+    "kafka_topic": "forex_data"
 }

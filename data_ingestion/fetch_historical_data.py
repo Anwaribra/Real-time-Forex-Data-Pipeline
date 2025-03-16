@@ -20,32 +20,59 @@ def setup_logging():
 def load_config():
     """Load configuration from config file."""
     try:
-        config_path = Path("config/config.json")
+        config_path = Path(__file__).parent.parent / "config" / "config.json"
         with open(config_path, "r") as file:
             return json.load(file)
     except Exception as e:
         logging.error(f"Error loading config: {str(e)}")
         raise
 
-def fetch_historical_data(from_currency, to_currency, outputsize="full"):
-    """Fetch historical forex data from API."""
+def fetch_historical_data():
+    """Main function to fetch and save historical forex data."""
+    setup_logging()
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Load configuration
+        config = load_config()
+        api_url = config["forex_api_url"]
+        api_key = config["forex_api_key"]
+        currency_pairs = config["currency_pairs"]
+        
+        # Process each currency pair
+        for pair in currency_pairs:
+            from_currency, to_currency = pair.split('/')
+            
+            # Fetch data for the currency pair
+            data = fetch_historical_data_for_pair(api_url, api_key, from_currency, to_currency)
+            if data:
+                save_historical_data_to_json(pair, data)
+            time.sleep(15)  # Respect API rate limits
+            
+        logger.info("Historical data fetch completed")
+        
+    except Exception as e:
+        logger.error(f"Fatal error in fetch_historical_data: {str(e)}")
+        raise
+
+def fetch_historical_data_for_pair(api_url, api_key, from_currency, to_currency, outputsize="full"):
+    """Fetch historical forex data from API for a specific currency pair."""
     logger = logging.getLogger(__name__)
     
     params = {
         "function": "FX_DAILY",
         "from_symbol": from_currency,
         "to_symbol": to_currency,
-        "apikey": API_KEY,
+        "apikey": api_key,
         "outputsize": outputsize
     }
     
     try:
         logger.info(f"Fetching historical data for {from_currency}/{to_currency}")
-        response = requests.get(API_URL, params=params, timeout=30)
+        response = requests.get(api_url, params=params, timeout=30)
         response.raise_for_status()
         
         data = response.json()
-        
         
         if "Error Message" in data:
             logger.error(f"API Error for {from_currency}/{to_currency}: {data['Error Message']}")
@@ -70,7 +97,7 @@ def save_historical_data_to_json(pair, data):
     
     try:
         # Ensure data directory exists
-        data_dir = Path("data")
+        data_dir = Path(__file__).parent.parent / "data"
         data_dir.mkdir(exist_ok=True)
         
         from_currency, to_currency = pair.split('/')
@@ -83,34 +110,5 @@ def save_historical_data_to_json(pair, data):
     except Exception as e:
         logger.error(f"Error saving data for {pair}: {str(e)}")
 
-def main():
-    """Main function to fetch and save historical forex data."""
-    setup_logging()
-    logger = logging.getLogger(__name__)
-    
-    try:
-        # Load configuration
-        global API_URL, API_KEY, CURRENCY_PAIRS
-        config = load_config()
-        API_URL = config["forex_api_url"]
-        API_KEY = config["forex_api_key"]
-        CURRENCY_PAIRS = config["currency_pairs"]
-        
-        # Process each currency pair
-        for pair in CURRENCY_PAIRS:
-            from_currency, to_currency = pair.split('/')
-            
-            # Fetch data for all currency pairs
-            data = fetch_historical_data(from_currency, to_currency)
-            if data:
-                save_historical_data_to_json(pair, data)
-            time.sleep(15)  # Respect API rate limits
-            
-        logger.info("Historical data fetch completed")
-        
-    except Exception as e:
-        logger.error(f"Fatal error in main: {str(e)}")
-        raise
-
 if __name__ == "__main__":
-    main()
+    fetch_historical_data()
