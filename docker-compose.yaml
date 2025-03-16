@@ -140,16 +140,29 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
     ports:
       - "2181:2181"
+    networks:
+      - app-network
+    healthcheck:
+      test: echo srvr | nc localhost 2181 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
     environment:
@@ -160,23 +173,46 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
     networks:
       - app-network
+    healthcheck:
+      test: kafka-topics --bootstrap-server localhost:29092 --list || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   app:
     build: .
     depends_on:
       kafka:
         condition: service_healthy
+      zookeeper:
+        condition: service_healthy
     networks:
       - app-network
     volumes:
       - .:/app
+      - ~/.local/lib/python3.9/site-packages:/usr/local/lib/python3.9/site-packages
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      PYTHONPATH: /usr/local/lib/python3.9/site-packages
     healthcheck:
       test: ["CMD", "python", "-c", "from kafka import KafkaProducer; KafkaProducer(bootstrap_servers=['kafka:29092'])"]
       interval: 10s
       timeout: 10s
       retries: 3
+    command: >
+      sh -c "
+        echo 'Waiting for Kafka to be ready...' &&
+        sleep 30 &&
+        python main_pipeline.py
+      "
 
 volumes:
   postgres-db-volume:

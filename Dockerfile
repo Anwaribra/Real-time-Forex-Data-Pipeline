@@ -2,9 +2,14 @@ FROM python:3.9
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install netcat for health checks only
+RUN apt-get update && apt-get install -y netcat-traditional
 
-COPY . .
+# Don't copy or install requirements since we're using local environment
+COPY scripts/wait-for-kafka.sh /app/scripts/
+RUN chmod +x scripts/wait-for-kafka.sh
 
-CMD ["python", "main_pipeline.py"] 
+# Mount the local directory instead of copying files
+VOLUME ["/app"]
+
+CMD ["./scripts/wait-for-kafka.sh", "&&", "python", "main_pipeline.py"] 

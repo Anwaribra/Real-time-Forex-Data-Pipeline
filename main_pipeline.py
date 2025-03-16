@@ -5,6 +5,7 @@ from typing import Optional
 import json
 import time
 from kafka import KafkaProducer, KafkaConsumer
+from kafka.admin import KafkaAdminClient, NewTopic
 
 from data_ingestion.fetch_data import fetch_forex_data
 from data_ingestion.fetch_historical_data import fetch_historical_data
@@ -32,14 +33,44 @@ def load_config():
 
 class ForexKafkaHandler:
     def __init__(self):
+        # Wait for Kafka to be ready
+        time.sleep(10)
+        
+        self.bootstrap_servers = ['kafka:29092']
         self.producer = KafkaProducer(
-            bootstrap_servers=['kafka:29092'],
+            bootstrap_servers=self.bootstrap_servers,
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             retries=5,
             retry_backoff_ms=1000
         )
         self.forex_topic = 'forex_data'
         
+        # Create topic if it doesn't exist
+        self._ensure_topic_exists()
+    
+    def _ensure_topic_exists(self):
+        """Ensure the forex topic exists"""
+        try:
+            admin_client = KafkaAdminClient(
+                bootstrap_servers=self.bootstrap_servers,
+                client_id='forex-admin'
+            )
+            
+            try:
+                admin_client.create_topics([NewTopic(
+                    name=self.forex_topic,
+                    num_partitions=1,
+                    replication_factor=1
+                )])
+                logging.info(f"Created topic: {self.forex_topic}")
+            except Exception as e:
+                if "already exists" in str(e):
+                    logging.info(f"Topic {self.forex_topic} already exists")
+                else:
+                    logging.error(f"Error creating topic: {str(e)}")
+        finally:
+            admin_client.close()
+
     def send_forex_data(self, currency_pair: str, data: dict):
         """Send forex data to Kafka topic"""
         try:
@@ -189,30 +220,40 @@ def cleanup_old_files(days: Optional[int] = 7) -> None:
     except Exception as e:
         logger.error(f"Cleanup failed: {str(e)}")
 
-# Producer example
-producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
-)
-
-# Consumer example
-consumer = KafkaConsumer(
-    'your_topic_name',
-    bootstrap_servers=['localhost:9092'],
-    auto_offset_reset='earliest',
-    enable_auto_commit=True,
-    group_id='your_consumer_group',
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
-)
-
 def test_kafka_connection():
     """Test Kafka producer and consumer"""
     logger = logging.getLogger(__name__)
+    producer = None
+    consumer = None
+    admin_client = None
     
     try:
+        # Wait for Kafka to be ready
+        time.sleep(10)
+        
+        bootstrap_servers = ['kafka:29092']
+        test_topic = 'test-topic'
+        
+        # Create admin client and test topic
+        admin_client = KafkaAdminClient(
+            bootstrap_servers=bootstrap_servers,
+            client_id='test-admin'
+        )
+        
+        try:
+            admin_client.create_topics([NewTopic(
+                name=test_topic,
+                num_partitions=1,
+                replication_factor=1
+            )])
+            logger.info(f"Created test topic: {test_topic}")
+        except Exception as e:
+            if "already exists" not in str(e):
+                raise
+            
         # Test producer
         producer = KafkaProducer(
-            bootstrap_servers=['kafka:29092'],
+            bootstrap_servers=bootstrap_servers,
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             retries=5,
             retry_backoff_ms=1000
@@ -220,32 +261,46 @@ def test_kafka_connection():
         
         # Send test message
         test_message = {"test": "Hello Kafka!"}
-        producer.send('test-topic', test_message)
+        future = producer.send(test_topic, test_message)
+        future.get(timeout=10)  # Wait for message to be sent
         producer.flush()
         logger.info("Test message sent successfully")
         
         # Test consumer
         consumer = KafkaConsumer(
-            'test-topic',
-            bootstrap_servers=['kafka:29092'],
+            test_topic,
+            bootstrap_servers=bootstrap_servers,
             auto_offset_reset='earliest',
             group_id='test-group',
             value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-            consumer_timeout_ms=5000  # Wait 5 seconds for messages
+            consumer_timeout_ms=5000
         )
         
         # Try to read the message
+        message_received = False
         for message in consumer:
             logger.info(f"Received test message: {message.value}")
-            return True
+            message_received = True
+            break
             
-        return False
+        if not message_received:
+            logger.error("No test message received")
+            return False
+            
+        return True
+        
     except Exception as e:
         logger.error(f"Kafka test failed: {str(e)}")
         return False
+        
     finally:
-        producer.close()
-        consumer.close()
+        # Clean up resources
+        if producer:
+            producer.close()
+        if consumer:
+            consumer.close()
+        if admin_client:
+            admin_client.close()
 
 if __name__ == "__main__":
     # Set up logging
