@@ -37,11 +37,10 @@
 #                                Default: ''
 #
 # Feel free to modify this file to suit your needs.
----
-version: '3'
 services:
   airflow-webserver:
     image: apache/airflow:2.7.1
+    user: "${AIRFLOW_UID:-50000}:0"
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
@@ -74,6 +73,7 @@ services:
 
   airflow-scheduler:
     image: apache/airflow:2.7.1
+    user: "${AIRFLOW_UID:-50000}:0"
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
