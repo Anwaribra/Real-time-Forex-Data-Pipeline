@@ -1,11 +1,17 @@
 {
     "forex_api_url": "https://www.alphavantage.co/query",
-    "forex_api_key": "${UY7INDCN4HZXSJJX}",
+    "forex_api_key": "UY7INDCN4HZXSJJX",
     "currency_pairs": [
         "EUR/USD",
         "USD/EGP",
         "EUR/EGP"
     ],
-    "kafka_bootstrap_servers": "localhost:9092",
-    "kafka_topic": "forex_data"
+    
+    "api": {
+        "base_url": "https://api.exchangerate-api.com/v4/latest",
+        "currencies": ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY"]
+    },
+    "snowflake": {
+        "table_name": "FOREX_RATES"
+    }
 }

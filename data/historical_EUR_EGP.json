@@ -4,10 +4,16 @@
         "2. From Symbol": "EUR",
         "3. To Symbol": "EGP",
         "4. Output Size": "Full size",
-        "5. Last Refreshed": "2025-03-14",
+        "5. Last Refreshed": "2025-03-17",
         "6. Time Zone": "UTC"
     },
     "Time Series FX (Daily)": {
+        "2025-03-17": {
+            "1. open": "55.03970",
+            "2. high": "55.17240",
+            "3. low": "54.94730",
+            "4. close": "55.05040"
+        },
         "2025-03-14": {
             "1. open": "54.97430",
             "2. high": "55.24520",

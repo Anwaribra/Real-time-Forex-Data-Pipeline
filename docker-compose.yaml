@@ -38,50 +38,57 @@
 #
 # Feel free to modify this file to suit your needs.
 ---
-   version: '3'
-   services:
-     zookeeper:
-       image: confluentinc/cp-zookeeper:latest
-       container_name: zookeeper
-       environment:
-         ZOOKEEPER_CLIENT_PORT: 2181
-         ZOOKEEPER_TICK_TIME: 2000
-       ports:
-         - "2181:2181"
-       networks:
-         - kafka-network
+version: '3'
+services:
+  airflow-webserver:
+    image: apache/airflow:2.7.1
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED=True
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_SIZE=5
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_MAX_OVERFLOW=10
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__FERNET_KEY=your_fernet_key_here
+      - AIRFLOW_HOME=/usr/local/airflow
+      - SNOWFLAKE_ACCOUNT=${SNOWFLAKE_ACCOUNT}
+      - SNOWFLAKE_USER=${SNOWFLAKE_USER}
+      - SNOWFLAKE_PASSWORD=${SNOWFLAKE_PASSWORD}
+      - SNOWFLAKE_WAREHOUSE=${SNOWFLAKE_WAREHOUSE}
+      - SNOWFLAKE_DATABASE=${SNOWFLAKE_DATABASE}
+      - SNOWFLAKE_SCHEMA=${SNOWFLAKE_SCHEMA}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./airflow.db:/usr/local/airflow/airflow.db
+    ports:
+      - "8080:8080"
+    command: webserver
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
 
-     kafka:
-       image: confluentinc/cp-kafka:latest
-       container_name: kafka
-       depends_on:
-         - zookeeper
-       ports:
-         - "9092:9092"
-       environment:
-         KAFKA_BROKER_ID: 1
-         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-         KAFKA_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092
-         KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-         KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-       networks:
-         - kafka-network
+  airflow-scheduler:
+    image: apache/airflow:2.7.1
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED=True
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_SIZE=5
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_MAX_OVERFLOW=10
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__FERNET_KEY=your_fernet_key_here
+      - AIRFLOW_HOME=/usr/local/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./airflow.db:/usr/local/airflow/airflow.db
+    command: scheduler
+    restart: always
 
-     snowflake-cli:
-       build: ./snowflake
-       volumes:
-         - ./config:/config
-       environment:
-         - SNOWFLAKE_ACCOUNT=${SNOWFLAKE_ACCOUNT}
-         - SNOWFLAKE_USER=${SNOWFLAKE_USER}
-         - SNOWFLAKE_PASSWORD=${SNOWFLAKE_PASSWORD}
-         - SNOWFLAKE_WAREHOUSE=${SNOWFLAKE_WAREHOUSE}
-         - SNOWFLAKE_DATABASE=${SNOWFLAKE_DATABASE}
-         - SNOWFLAKE_SCHEMA=${SNOWFLAKE_SCHEMA}
-
-   networks:
-     kafka-network:
-       name: kafka-network
-       driver: bridge
+ 

@@ -1,5 +1,7 @@
 import requests
 import json
+import pandas as pd
+from datetime import datetime
 import os
 import logging
 import time
@@ -46,7 +48,7 @@ def fetch_forex_data() -> None:
         api_key = config['forex_api_key']
         currency_pairs = config['currency_pairs']
 
-        # Ensure 'data/' directory exists
+        
         data_dir = Path(__file__).parent.parent / 'data'
         data_dir.mkdir(exist_ok=True)
 
@@ -62,7 +64,6 @@ def fetch_forex_data() -> None:
 
                 
                 time.sleep(1)  
-
                 response = requests.get(base_url, params=params, timeout=10)
                 response.raise_for_status()
 
@@ -83,12 +84,40 @@ def fetch_forex_data() -> None:
             except Exception as e:
                 logger.error(f"Error processing {pair}: {str(e)}")
                 
-            
+            # Add delay between requests
             time.sleep(0.5)
 
     except Exception as e:
         logger.error(f"Fatal error: {str(e)}")
         raise
 
+def fetch_forex_rates():
+    with open('config/config.json', 'r') as f:
+        config = json.load(f)
+    
+    base_url = config['api']['base_url']
+    currencies = config['api']['currencies']
+    
+    response = requests.get(base_url)
+    if response.status_code == 200:
+        data = response.json()
+        rates = data['rates']
+        
+        forex_data = []
+        timestamp = datetime.now()
+        
+        for currency in currencies:
+            if currency in rates:
+                forex_data.append({
+                    'timestamp': timestamp,
+                    'currency': currency,
+                    'rate': rates[currency]
+                })
+        
+        df = pd.DataFrame(forex_data)
+        os.makedirs('temp_data', exist_ok=True)
+        df.to_csv('temp_data/current_rates.csv', index=False)
+        
 if __name__ == '__main__':
     fetch_forex_data()
+    fetch_forex_rates()
