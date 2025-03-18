@@ -89,6 +89,20 @@ The pipeline creates the following in Snowflake:
   - timestamp
   - inserted_at
 
+## Airflow Workflow
+The pipeline is orchestrated using Apache Airflow with a simple but effective workflow:
+
+![Airflow DAG Workflow](https://github.com/anwarmousa100/Real-time-Data-Pipeline/workflows/images/airflow_dag.png)
+
+The workflow consists of two main tasks:
+1. `fetch_forex_rates`: Retrieves currency exchange data from the API or generates mock data if needed
+2. `process_and_store_data`: Processes the retrieved data and stores it in Snowflake or local storage
+
+## Snowflake Data Visualization
+The processed data can be viewed in Snowflake's interface, with proper staging and table creation:
+
+![Snowflake Visualization](https://github.com/anwarmousa100/Real-time-Data-Pipeline/workflows/images/snowflake_view.png)
+
 ## Error Handling
 The pipeline includes comprehensive error handling for:
 - API connection issues
