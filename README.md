@@ -53,17 +53,7 @@ Real-time-Data-Pipeline/
 The Alpha Vantage free tier has a 25 requests/day limit.
 The pipeline detects rate limits and automatically switches to mock data.
 
-## Usage Options
-
-### Standalone Mode
-```bash
-# Run with mock data
-python run_pipeline.py --mock
-
-# View latest rates
-python view_rates.py
-```
-
+#
 ### Airflow DAG Mode
 Two options to run the Airflow DAG:
 
@@ -88,20 +78,6 @@ The pipeline creates the following in Snowflake:
   - last_refreshed
   - timestamp
   - inserted_at
-
-## Airflow Workflow
-The pipeline is orchestrated using Apache Airflow with a simple but effective workflow:
-
-![Airflow DAG Workflow](images/airflow_dag.png)
-
-The workflow consists of two main tasks:
-1. `fetch_forex_rates`: Retrieves currency exchange data from the API or generates mock data if needed
-2. `process_and_store_data`: Processes the retrieved data and stores it in Snowflake or local storage
-
-## Snowflake Data Visualization
-The processed data can be viewed in Snowflake's interface, with proper staging and table creation:
-
-![Snowflake Visualization](images/snowflake_view.png)
 
 ## Error Handling
 The pipeline includes comprehensive error handling for:
