@@ -6,12 +6,19 @@
         "USD/EGP",
         "EUR/EGP"
     ],
-    
-    "api": {
-        "base_url": "https://api.exchangerate-api.com/v4/latest",
-        "currencies": ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY"]
-    },
     "snowflake": {
         "table_name": "FOREX_RATES"
+    },
+    "api_rate_limits": {
+        "requests_per_minute": 5,
+        "delay_between_requests": 12
+    },
+    "logging": {
+        "level": "INFO",
+        "file_path": "logs/forex_data.log"
+    },
+    "data_storage": {
+        "csv_directory": "data",
+        "backup_retention_days": 30
     }
 }

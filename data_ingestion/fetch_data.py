@@ -2,32 +2,19 @@ import requests
 import json
 import pandas as pd
 from datetime import datetime
-import os
 import logging
 import time
-from typing import Dict, List
 from pathlib import Path
 
-def load_config() -> Dict:
-    """Load and validate configuration file."""
-    try:
-        config_path = Path(__file__).parent.parent / 'config' / 'config.json'
-        with open(config_path, 'r') as file:
-            config = json.load(file)
-            
-        required_fields = ['forex_api_url', 'forex_api_key', 'currency_pairs']
-        for field in required_fields:
-            if field not in config:
-                raise ValueError(f"Missing required config field: {field}")
-                
-        return config
-    except FileNotFoundError:
-        raise FileNotFoundError("Config file not found. Please ensure config.json exists.")
-    except json.JSONDecodeError:
-        raise ValueError("Invalid JSON in config file.")
+def load_config() -> dict:
+    """Load configuration file."""
+    config_path = Path(__file__).parent.parent / 'config' / 'config.json'
+    with open(config_path, 'r') as file:
+        return json.load(file)
 
-def setup_logging() -> None:
-    """Configure logging settings."""
+def fetch_forex_data() -> pd.DataFrame:
+    """Fetch current forex data for configured currency pairs."""
+    # Setup better logging with both file and console output
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -36,88 +23,109 @@ def setup_logging() -> None:
             logging.StreamHandler()
         ]
     )
-
-def fetch_forex_data() -> None:
-    """Fetch and save forex data for configured currency pairs."""
-    setup_logging()
     logger = logging.getLogger(__name__)
+    
+    logger.info("Starting forex data fetch")
     
     try:
         config = load_config()
-        base_url = config['forex_api_url']
-        api_key = config['forex_api_key']
-        currency_pairs = config['currency_pairs']
+        logger.info(f"Config loaded, found {len(config['currency_pairs'])} currency pairs")
+        results = []
 
-        
-        data_dir = Path(__file__).parent.parent / 'data'
-        data_dir.mkdir(exist_ok=True)
-
-        for pair in currency_pairs:
+        for pair in config['currency_pairs']:
             try:
                 from_currency, to_currency = pair.split('/')
+                logger.info(f"Fetching data for {from_currency}/{to_currency}")
+                
                 params = {
                     "function": "CURRENCY_EXCHANGE_RATE",
                     "from_currency": from_currency,
                     "to_currency": to_currency,
-                    "apikey": api_key
+                    "apikey": config['forex_api_key']
                 }
 
+                # Debug the API request URL and parameters
+                api_url = config['forex_api_url']
+                logger.info(f"API URL: {api_url}")
+                logger.info(f"Params: {params}")
                 
-                time.sleep(1)  
-                response = requests.get(base_url, params=params, timeout=10)
-                response.raise_for_status()
-
+                # Make request with better error handling
+                response = requests.get(api_url, params=params, timeout=15)
+                
+                # Log the response status and content length
+                logger.info(f"Response status: {response.status_code}, Content length: {len(response.text)}")
+                
+                # Check for API error message
                 data = response.json()
-                logger.info(f"Data fetched for {pair}")
-                
-                # Save data to JSON file
-                filename = f"realtime_{from_currency}_{to_currency}.json"
-                filepath = data_dir / filename
-                
-                with open(filepath, "w") as file:
-                    json.dump(data, file, indent=4)
+                if "Error Message" in data:
+                    logger.error(f"API error: {data['Error Message']}")
+                    continue
+                    
+                if "Note" in data:
+                    logger.warning(f"API note: {data['Note']}")
 
-                logger.info(f"Data saved to {filepath}")
+                if 'Realtime Currency Exchange Rate' in data:
+                    rate_data = data['Realtime Currency Exchange Rate']
+                    exchange_rate = float(rate_data['5. Exchange Rate'])
+                    
+                    logger.info(f"Successfully fetched rate for {pair}: {exchange_rate}")
+                    
+                    results.append({
+                        'from_currency': from_currency,
+                        'to_currency': to_currency,
+                        'exchange_rate': exchange_rate,
+                        'timestamp': datetime.now().isoformat()
+                    })
+                else:
+                    logger.error(f"Unexpected response format for {pair}: {data.keys()}")
+                
+                # Respect API rate limits
+                logger.info("Waiting for rate limit...")
+                time.sleep(3)  # Increased sleep time to be safe
 
-            except requests.exceptions.RequestException as e:
-                logger.error(f"Failed to fetch data for {pair}: {str(e)}")
             except Exception as e:
-                logger.error(f"Error processing {pair}: {str(e)}")
-                
-            # Add delay between requests
-            time.sleep(0.5)
+                logger.error(f"Failed to fetch data for {pair}: {str(e)}")
+                logger.exception("Exception details:")
 
+        if results:
+            logger.info(f"Successfully fetched data for {len(results)} currency pairs")
+            df = pd.DataFrame(results)
+            
+            # Save to CSV with timestamp
+            data_dir = Path(__file__).parent.parent / 'data'
+            data_dir.mkdir(exist_ok=True)
+            
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+            csv_path = data_dir / f'forex_rates_{timestamp}.csv'
+            df.to_csv(csv_path, index=False)
+            logger.info(f"Data saved to {csv_path}")
+            
+            # Also save a JSON version
+            json_path = data_dir / f'forex_rates_{timestamp}.json'
+            results_dict = {
+                "timestamp": datetime.now().isoformat(),
+                "rates": {}
+            }
+            
+            for row in results:
+                key = f"{row['from_currency']}_{row['to_currency']}"
+                results_dict["rates"][key] = row['exchange_rate']
+            
+            with open(json_path, 'w') as f:
+                json.dump(results_dict, f, indent=2)
+            logger.info(f"JSON data saved to {json_path}")
+            
+            return df
+        else:
+            logger.warning("No data was fetched from the API")
+            return pd.DataFrame()
+        
     except Exception as e:
-        logger.error(f"Fatal error: {str(e)}")
-        raise
+        logger.error(f"Fatal error in fetch_forex_data: {str(e)}")
+        logger.exception("Exception details:")
+        return pd.DataFrame()
 
-def fetch_forex_rates():
-    with open('config/config.json', 'r') as f:
-        config = json.load(f)
-    
-    base_url = config['api']['base_url']
-    currencies = config['api']['currencies']
-    
-    response = requests.get(base_url)
-    if response.status_code == 200:
-        data = response.json()
-        rates = data['rates']
-        
-        forex_data = []
-        timestamp = datetime.now()
-        
-        for currency in currencies:
-            if currency in rates:
-                forex_data.append({
-                    'timestamp': timestamp,
-                    'currency': currency,
-                    'rate': rates[currency]
-                })
-        
-        df = pd.DataFrame(forex_data)
-        os.makedirs('temp_data', exist_ok=True)
-        df.to_csv('temp_data/current_rates.csv', index=False)
-        
 if __name__ == '__main__':
-    fetch_forex_data()
-    fetch_forex_rates()
+    result = fetch_forex_data()
+    print(f"Results shape: {result.shape}")
+    print(result)

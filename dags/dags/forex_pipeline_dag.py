@@ -6,36 +6,33 @@ import logging
 import time
 from pathlib import Path
 from datetime import datetime, timedelta
+from pendulum import timezone
 
-# Only import Airflow when not running the file directly
-if __name__ != "__main__":
-    from airflow import DAG
-    from airflow.operators.python import PythonOperator
+from airflow import DAG
+from airflow.operators.python import PythonOperator
 
 # Define paths
-DAG_PATH = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(os.path.dirname(DAG_PATH))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONFIG_PATH = os.path.join(PROJECT_ROOT, 'config', 'config.json')
 DATA_PATH = os.path.join(PROJECT_ROOT, 'data')
 
-# Create required directories
+# Create data directory if needed
 Path(DATA_PATH).mkdir(parents=True, exist_ok=True)
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Load configuration
+# Load configuration once
 with open(CONFIG_PATH, 'r') as config_file:
     config = json.load(config_file)
 
 def fetch_forex_rates(**context):
     """Fetch current forex rates from API"""
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("airflow.task")
     results = []
     
-    try:
-        for pair in config['currency_pairs']:
+    for pair in config['currency_pairs']:
+        try:
             from_currency, to_currency = pair.split('/')
+            
+            # API request parameters
             params = {
                 "function": "CURRENCY_EXCHANGE_RATE",
                 "from_currency": from_currency,
@@ -43,113 +40,110 @@ def fetch_forex_rates(**context):
                 "apikey": config['forex_api_key']
             }
             
+            # Make API request
             response = requests.get(config['forex_api_url'], params=params, timeout=10)
-            response.raise_for_status()
             data = response.json()
             
+            # Extract exchange rate
             if 'Realtime Currency Exchange Rate' in data:
                 rate_data = data['Realtime Currency Exchange Rate']
                 results.append({
                     'from_currency': from_currency,
                     'to_currency': to_currency,
                     'exchange_rate': float(rate_data['5. Exchange Rate']),
-                    'last_refreshed': rate_data['6. Last Refreshed'],
                     'timestamp': datetime.now().isoformat()
                 })
-                logger.info(f"Successfully fetched rate for {pair}")
+                logger.info(f"Fetched {from_currency}/{to_currency} rate")
+            else:
+                logger.warning(f"No rate data for {pair}: {data.keys()}")
             
-            # Respect API rate limits
+            # API rate limiting
+            context['ti'].xcom_push(key=f'last_pair', value=pair)
             time.sleep(1)
             
-    except Exception as e:
-        logger.error(f"Error fetching forex rates: {str(e)}")
-        raise
-        
+        except Exception as e:
+            logger.error(f"Error fetching {pair}: {str(e)}")
+    
+    # Save results to CSV
     if results:
-        output_file = os.path.join(DATA_PATH, f'forex_rates_{datetime.now().strftime("%Y%m%d_%H%M")}.csv')
+        filename = f'forex_rates_{datetime.now().strftime("%Y%m%d")}.csv'
+        output_file = os.path.join(DATA_PATH, filename)
         pd.DataFrame(results).to_csv(output_file, index=False)
+        logger.info(f"Saved {len(results)} rates to {filename}")
         return output_file
     
     return None
 
 def process_forex_data(**context):
-    """Process forex data and save to database"""
-    logger = logging.getLogger(__name__)
-    ti = context['task_instance']
+    """Create JSON with structured forex rates data"""
+    logger = logging.getLogger("airflow.task")
+    
+    # Get input file from previous task
+    ti = context['ti']
     forex_file = ti.xcom_pull(task_ids='fetch_forex_rates')
     
-    if not forex_file:
-        raise ValueError("No forex data file found")
-        
+    if not forex_file or not os.path.exists(forex_file):
+        logger.error("No forex data file found")
+        return False
+    
     try:
-        # Read and process the data
+        # Read CSV
         df = pd.read_csv(forex_file)
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
         
-        # Import here to avoid Airflow initialization when running directly
-        import sys
-        sys.path.append(PROJECT_ROOT)
-        from data_storage.save_to_snowflake import save_to_snowflake
-        save_to_snowflake(df)
+        # Create results dictionary
+        results = {
+            "timestamp": datetime.now().isoformat(),
+            "rates": {}
+        }
         
-        logger.info("Successfully processed and saved forex data")
-        return forex_file
+        # Process each currency pair
+        for _, row in df.iterrows():
+            key = f"{row['from_currency']}_{row['to_currency']}"
+            results["rates"][key] = row['exchange_rate']
+        
+        # Save to JSON
+        json_file = forex_file.replace('.csv', '.json')
+        with open(json_file, 'w') as f:
+            json.dump(results, f, indent=2)
+            
+        logger.info(f"Processed data saved to {json_file}")
+        return json_file
         
     except Exception as e:
-        logger.error(f"Error processing forex data: {str(e)}")
-        raise
+        logger.error(f"Error processing data: {str(e)}")
+        return False
 
-# Only create the DAG when not running the file directly
-if __name__ != "__main__":
-    default_args = {
-        'owner': 'anwar',
-        'depends_on_past': False,
-        'start_date': datetime(2024, 3, 8),
-        'email': ['anwarmousa100@gmail.com'],
-        'email_on_failure': True,
-        'email_on_retry': False,
-        'retries': 3,
-        'retry_delay': timedelta(minutes=5),
-    }
 
-    with DAG(
-        'forex_data_pipeline',
-        default_args=default_args,
-        description='Fetch and process forex exchange rates',
-        schedule_interval='@daily',
-        catchup=False,
-        tags=['forex']
-    ) as dag:
-        fetch_rates = PythonOperator(
-            task_id='fetch_forex_rates',
-            python_callable=fetch_forex_rates
-        )
+# DAG definition
+default_args = {
+    'owner': 'anwar',
+    'depends_on_past': False,
+    'start_date': datetime(2024, 3, 8, tzinfo=timezone('UTC')),
+    'email': ['anwarmousa100@gmail.com'],
+    'email_on_failure': True,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
 
-        process_data = PythonOperator(
-            task_id='process_forex_data',
-            python_callable=process_forex_data
-        )
-
-        # Define task dependencies
-        fetch_rates >> process_data
-
-# For testing when running directly
-if __name__ == "__main__":
-    print("Testing forex data pipeline...")
+with DAG(
+    'forex_pipeline',
+    default_args=default_args,
+    description='Forex exchange rates pipeline',
+    schedule_interval='@daily',
+    catchup=False,
+    tags=['forex'],
+) as dag:
+    # Task 1: Fetch forex rates
+    fetch_task = PythonOperator(
+        task_id='fetch_forex_rates',
+        python_callable=fetch_forex_rates,
+    )
     
-    # Test fetch_forex_rates
-    context = {'execution_date': datetime.now()}
-    forex_file = fetch_forex_rates(**context)
+    # Task 2: Process and transform data
+    process_task = PythonOperator(
+        task_id='process_forex_data',
+        python_callable=process_forex_data,
+    )
     
-    if forex_file:
-        print(f"Successfully fetched forex rates: {forex_file}")
-        
-        # Test process_forex_data (mock task instance)
-        class MockTaskInstance:
-            def xcom_pull(self, task_ids):
-                return forex_file
-                
-        context['task_instance'] = MockTaskInstance()
-        process_forex_data(**context)
-    else:
-        print("Failed to fetch forex rates")
+    # Set task dependencies
+    fetch_task >> process_task

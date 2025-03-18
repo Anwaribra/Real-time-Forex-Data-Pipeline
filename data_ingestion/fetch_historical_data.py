@@ -1,116 +1,112 @@
 import requests
 import json
-import time
+import pandas as pd
 from datetime import datetime, timedelta
 import logging
+import time
 from pathlib import Path
 import os
+import sys
 
-def setup_logging():
-    """Configure logging settings."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler('historical_forex.log'),
-            logging.StreamHandler()
-        ]
-    )
+# Add the project root directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-def load_config():
-    """Load configuration from config file."""
-    try:
-        config_path = Path("config/config.json")
-        with open(config_path, "r") as file:
-            return json.load(file)
-    except Exception as e:
-        logging.error(f"Error loading config: {str(e)}")
-        raise
+from data_ingestion.fetch_data import load_config  # Reuse the config loading
 
-def fetch_historical_data(from_currency, to_currency, outputsize="full"):
-    """Fetch historical forex data from API."""
+def _is_date_in_range(date_str: str, start_date: datetime, end_date: datetime) -> bool:
+    """Check if date is within the specified range."""
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    return start_date <= date_obj <= end_date
+
+def _make_api_request(url: str, params: dict, max_retries: int = 3) -> dict:
+    """Make API request with retries."""
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            return response.json()
+        except (requests.RequestException, json.JSONDecodeError) as e:
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(2 ** attempt)  # Exponential backoff
+    
+    return {}  # Should not reach here due to the raise, but added for completeness
+
+def fetch_historical_data(days: int = 7, data_dir: str = None) -> pd.DataFrame:
+    """Fetch historical forex data for the last N days."""
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     
-    params = {
-        "function": "FX_DAILY",
-        "from_symbol": from_currency,
-        "to_symbol": to_currency,
-        "apikey": API_KEY,
-        "outputsize": outputsize
-    }
+    logger.info(f"Starting historical data fetch for the past {days} days")
     
-    try:
-        logger.info(f"Fetching historical data for {from_currency}/{to_currency}")
-        response = requests.get(API_URL, params=params, timeout=30)
-        response.raise_for_status()
-        
-        data = response.json()
-        
-        # Validate response data
-        if "Error Message" in data:
-            logger.error(f"API Error for {from_currency}/{to_currency}: {data['Error Message']}")
-            return None
-            
-        if "Time Series FX (Daily)" not in data:
-            logger.error(f"No historical data available for {from_currency}/{to_currency}")
-            return None
-            
-        return data
-        
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed for {from_currency}/{to_currency}: {str(e)}")
-        return None
-    except Exception as e:
-        logger.error(f"Unexpected error for {from_currency}/{to_currency}: {str(e)}")
-        return None
-
-def save_historical_data_to_json(pair, data):
-    """Save historical data to JSON file."""
-    logger = logging.getLogger(__name__)
+    config = load_config()
+    results = []
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days)
+    logger.info(f"Date range: {start_date.date()} to {end_date.date()}")
     
-    try:
-        # Ensure data directory exists
-        data_dir = Path("data")
+    total_pairs = len(config['currency_pairs'])
+    for i, pair in enumerate(config['currency_pairs'], 1):
+        logger.info(f"Processing {pair} ({i}/{total_pairs})")
+        try:
+            from_currency, to_currency = pair.split('/')
+            params = {
+                "function": "FX_DAILY",
+                "from_symbol": from_currency,
+                "to_symbol": to_currency,
+                "apikey": config['forex_api_key'],
+                "outputsize": "full"
+            }
+            
+            data = _make_api_request(config['forex_api_url'], params)
+            
+            if 'Time Series FX (Daily)' in data:
+                daily_data = data['Time Series FX (Daily)']
+                
+                for date, rates in daily_data.items():
+                    if _is_date_in_range(date, start_date, end_date):
+                        results.append({
+                            'date': date,
+                            'from_currency': from_currency,
+                            'to_currency': to_currency,
+                            'close': float(rates['4. close'])
+                        })
+            
+            time.sleep(12)  # API rate limit
+            
+        except Exception as e:
+            logger.error(f"Error with {pair}: {str(e)}")
+    
+    if results:
+        if data_dir is None:
+            data_dir = Path(__file__).parent.parent / 'data'
+        else:
+            data_dir = Path(data_dir)
         data_dir.mkdir(exist_ok=True)
         
-        from_currency, to_currency = pair.split('/')
-        filename = data_dir / f"historical_{from_currency}_{to_currency}.json"
+        today = datetime.now().strftime("%Y%m%d")
+        df = pd.DataFrame(results)
+        df.to_csv(data_dir / f'historical_rates_{today}.csv', index=False)
         
-        with open(filename, "w") as file:
-            json.dump(data, file, indent=4)
-        logger.info(f"Saved historical data to {filename}")
+        # Create a single consolidated JSON
+        consolidated = {"timestamp": datetime.now().isoformat(), "rates": {}}
+        for date in sorted(df['date'].unique()):
+            consolidated["rates"][date] = {}
+            for pair in config['currency_pairs']:
+                from_curr, to_curr = pair.split('/')
+                key = f"{from_curr}_{to_curr}"
+                match = df[(df['date'] == date) & 
+                           (df['from_currency'] == from_curr) & 
+                           (df['to_currency'] == to_curr)]
+                if not match.empty:
+                    consolidated["rates"][date][key] = float(match.iloc[0]['close'])
         
-    except Exception as e:
-        logger.error(f"Error saving data for {pair}: {str(e)}")
-
-def main():
-    """Main function to fetch and save historical forex data."""
-    setup_logging()
-    logger = logging.getLogger(__name__)
+        with open(data_dir / f'historical_rates_{today}.json', 'w') as f:
+            json.dump(consolidated, f, indent=2)
+        
+        return df
     
-    try:
-        # Load configuration
-        global API_URL, API_KEY, CURRENCY_PAIRS
-        config = load_config()
-        API_URL = config["forex_api_url"]
-        API_KEY = config["forex_api_key"]
-        CURRENCY_PAIRS = config["currency_pairs"]
-        
-        # Process each currency pair
-        for pair in CURRENCY_PAIRS:
-            from_currency, to_currency = pair.split('/')
-            
-            # Fetch data for all currency pairs
-            data = fetch_historical_data(from_currency, to_currency)
-            if data:
-                save_historical_data_to_json(pair, data)
-            time.sleep(15)  # Respect API rate limits
-            
-        logger.info("Historical data fetch completed")
-        
-    except Exception as e:
-        logger.error(f"Fatal error in main: {str(e)}")
-        raise
+    return pd.DataFrame()
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    fetch_historical_data(days=7)

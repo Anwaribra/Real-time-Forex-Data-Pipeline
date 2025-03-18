@@ -2,6 +2,7 @@ apache-airflow==2.7.1
 sqlalchemy==1.4.50
 psycopg2-binary==2.9.9
 pandas==2.1.1
+numpy==2.0.3
 requests==2.31.0
 python-dotenv==1.0.0
 snowflake-connector-python==3.5.0
