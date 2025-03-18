@@ -1,7 +1,5 @@
 # Real-time Forex Data Pipeline
 
-![Project Icon](images/compute_warehouse.png)
-
 ## Project Overview
 A data pipeline project that fetches real-time currency exchange rates from [Alpha Vantage API](https://www.alphavantage.co), processes the data, and stores it in Snowflake data warehouse. The pipeline is orchestrated using Apache Airflow and can also be run in Docker containers.
 
@@ -35,7 +33,6 @@ Real-time-Data-Pipeline/
 │   └── test.sql              # SQL test queries
 ├── data/                     # Data storage for all files
 ├── logs/                     # Log files
-├── images/                   # Project images and diagrams
 ├── tests/                    # Test cases
 ├── .env                      # Environment variables
 ├── Dockerfile                # Docker configuration
@@ -121,9 +118,6 @@ The pipeline uses a dedicated compute warehouse in Snowflake:
 ### Snowflake Data Flow
 The data pipeline follows this architecture in Snowflake:
 
-![Snowflake Stages and Table](images/snowflake_stages.png)
-
-The pipeline uses a two-stage approach:
 1. `FOREX_STAGE` - Initial data ingestion stage
 2. `FOREX_RATES_STAGE` - Transformation stage before loading to final table
 3. `FOREX_RATES` - Final table for storing the processed data
@@ -135,4 +129,3 @@ The Airflow DAG consists of two main tasks:
 
 1. `fetch_forex_rates` - Python operator that fetches data from Alpha Vantage API
 2. `process_and_store_data` - Python operator that processes and stores data in Snowflake
-
