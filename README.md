@@ -30,14 +30,8 @@ Real-time-Data-Pipeline/
 ├── data_storage/             # Data storage operations
 │   ├── save_to_snowflake.py  # Snowflake integration
 │   ├── simplified_storage.py # Local storage fallback
-│   └── test.sql              # SQL test queries
-├── data/                     # Data storage for all files
-├── logs/                     # Log files
-├── tests/                    # Test cases
-├── .env                      # Environment variables
 ├── Dockerfile                # Docker configuration
 ├── docker-compose.yaml       # Docker compose configuration
-├── view_rates.py             # Utility to view latest rates
 └── requirements.txt          # Python dependencies
 ```
 
@@ -48,52 +42,12 @@ Real-time-Data-Pipeline/
 - Alpha Vantage API
 - Docker
 - Pandas & NumPy
+  
+## Pipeline Architecture
+### Snowflake Compute Warehouse
+The pipeline uses a dedicated compute warehouse in Snowflake:
 
-## How It Works
-1. **Data Collection**: Fetches from API or generates mock data
-2. **Processing**: Validates and transforms the data
-3. **Storage**: Saves to Snowflake or local files depending on availability
-
-## Setup and Usage
-
-### Prerequisites
-- Python 3.9+
-- Docker (optional)
-- Snowflake account (optional)
-
-### Installation
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Configure your environment variables in `.env` file
-
-### Running the Pipeline
-You can run the pipeline in different modes:
-
-**View Latest Rates**:
-```bash
-python view_rates.py
-```
-
-**With Docker**:
-```bash
-docker-compose up
-```
-
-**With Airflow**:
-The Airflow webserver will be available at http://localhost:8080
-
-## Error Handling
-- API rate limits → automatic mock data
-- Snowflake unavailable → local CSV/JSON storage
-- Data validation issues → proper error reporting
-
-## Working With API Limits
-The Alpha Vantage free tier has a 25 requests/day limit.
-The pipeline detects rate limits and automatically switches to mock data.
-
+![Snowflake Compute Warehouse](config/icon/P1.png)
 ## Snowflake Integration
 The pipeline creates the following in Snowflake:
 - Database (if not exists)
@@ -106,16 +60,6 @@ The pipeline creates the following in Snowflake:
   - timestamp
   - inserted_at
 
-## Pipeline Architecture
-
-### Snowflake Compute Warehouse
-The pipeline uses a dedicated compute warehouse in Snowflake:
-
-![Snowflake Compute Warehouse](config/icon/P1.png)
-
-`COMPUTE_WH` - The Snowflake compute warehouse that powers all data processing operations.
-
-### Snowflake Data Flow
 The data pipeline follows this architecture in Snowflake:
 
 1. `FOREX_STAGE` - Initial data ingestion stage
