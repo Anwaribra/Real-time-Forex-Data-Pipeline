@@ -66,7 +66,7 @@ The data pipeline follows this architecture in Snowflake:
 2. `FOREX_RATES_STAGE` - Transformation stage before loading to final table
 3. `FOREX_RATES` - Final table for storing the processed data
 
-#### Airflow DAG
+## Airflow DAG
 The Airflow DAG consists of two main tasks:
 
 ![Airflow DAG](config/icon/p2.png)
