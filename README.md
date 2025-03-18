@@ -18,10 +18,16 @@ Real-time-Data-Pipeline/
 ├── dags/                     # Airflow DAGs
 │   └── dags/
 │       └── forex_pipeline_dag.py
+├── data_ingestion/           # Data fetching modules
+│   ├── fetch_data.py         # API and mock data functions
+│   ├── fetch_historical_data.py # Historical data fetching
+│   └── cleanup.py            # Data cleanup utilities
 ├── data_storage/             # Data storage operations
-│   └── save_to_snowflake.py # Snowflake integration
-├── data/                     # Temporary data storage
+│   ├── save_to_snowflake.py  # Snowflake integration
+│   └── simplified_storage.py # Local storage fallback
+├── data/                     # Data storage for all files
 ├── logs/                     # Log files
+├── tests/                    # Test cases
 └── requirements.txt          # Python dependencies
 ```
 
@@ -30,8 +36,41 @@ Real-time-Data-Pipeline/
 - Apache Airflow
 - Snowflake
 - Alpha Vantage API
+- Snowflake (optional)
+- Apache Airflow (optional)
 
+## How It Works
+1. **Data Collection**: Fetches from API or generates mock data
+2. **Processing**: Validates and transforms the data
+3. **Storage**: Saves to Snowflake or local files depending on availability
 
+## Error Handling
+- API rate limits → automatic mock data
+- Snowflake unavailable → local CSV/JSON storage
+- Data validation issues → proper error reporting
+
+## Working With API Limits
+The Alpha Vantage free tier has a 25 requests/day limit.
+The pipeline detects rate limits and automatically switches to mock data.
+
+## Usage Options
+
+### Standalone Mode
+```bash
+# Run with mock data
+python run_pipeline.py --mock
+
+# View latest rates
+python view_rates.py
+```
+
+### Airflow DAG Mode
+Two options to run the Airflow DAG:
+
+1. **Without Airflow installed**:
+```bash
+# Run the DAG without needing Airflow
+python run_dag.py
 
 ## Data Flow
 1. **Data Collection**: Fetch forex rates from Alpha Vantage API

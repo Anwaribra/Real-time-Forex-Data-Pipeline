@@ -1,118 +1,122 @@
 import os
 import json
-import requests
 import pandas as pd
 import logging
-import time
+import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 from pendulum import timezone
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.models import Variable
 
 # Define paths
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CONFIG_PATH = os.path.join(PROJECT_ROOT, 'config', 'config.json')
-DATA_PATH = os.path.join(PROJECT_ROOT, 'data')
+PROJECT_ROOT = '/home/anwar/Real-time-Data-Pipeline'
+sys.path.append(PROJECT_ROOT)  # Add project root to Python path
 
 # Create data directory if needed
-Path(DATA_PATH).mkdir(parents=True, exist_ok=True)
-
-# Load configuration once
-with open(CONFIG_PATH, 'r') as config_file:
-    config = json.load(config_file)
+Path(os.path.join(PROJECT_ROOT, 'data')).mkdir(parents=True, exist_ok=True)
 
 def fetch_forex_rates(**context):
-    """Fetch current forex rates from API"""
+    """Fetch current forex rates from API using our fetch_data module"""
     logger = logging.getLogger("airflow.task")
-    results = []
-    
-    for pair in config['currency_pairs']:
-        try:
-            from_currency, to_currency = pair.split('/')
-            
-            # API request parameters
-            params = {
-                "function": "CURRENCY_EXCHANGE_RATE",
-                "from_currency": from_currency,
-                "to_currency": to_currency,
-                "apikey": config['forex_api_key']
-            }
-            
-            # Make API request
-            response = requests.get(config['forex_api_url'], params=params, timeout=10)
-            data = response.json()
-            
-            # Extract exchange rate
-            if 'Realtime Currency Exchange Rate' in data:
-                rate_data = data['Realtime Currency Exchange Rate']
-                results.append({
-                    'from_currency': from_currency,
-                    'to_currency': to_currency,
-                    'exchange_rate': float(rate_data['5. Exchange Rate']),
-                    'timestamp': datetime.now().isoformat()
-                })
-                logger.info(f"Fetched {from_currency}/{to_currency} rate")
-            else:
-                logger.warning(f"No rate data for {pair}: {data.keys()}")
-            
-            # API rate limiting
-            context['ti'].xcom_push(key=f'last_pair', value=pair)
-            time.sleep(1)
-            
-        except Exception as e:
-            logger.error(f"Error fetching {pair}: {str(e)}")
-    
-    # Save results to CSV
-    if results:
-        filename = f'forex_rates_{datetime.now().strftime("%Y%m%d")}.csv'
-        output_file = os.path.join(DATA_PATH, filename)
-        pd.DataFrame(results).to_csv(output_file, index=False)
-        logger.info(f"Saved {len(results)} rates to {filename}")
-        return output_file
-    
-    return None
-
-def process_forex_data(**context):
-    """Create JSON with structured forex rates data"""
-    logger = logging.getLogger("airflow.task")
-    
-    # Get input file from previous task
-    ti = context['ti']
-    forex_file = ti.xcom_pull(task_ids='fetch_forex_rates')
-    
-    if not forex_file or not os.path.exists(forex_file):
-        logger.error("No forex data file found")
-        return False
+    logger.info("Starting Airflow fetch task")
     
     try:
-        # Read CSV
-        df = pd.read_csv(forex_file)
+        # Import our existing fetch functionality
+        # First, add the project root to the Python path
+        sys.path.insert(0, PROJECT_ROOT)
+        from data_ingestion.fetch_data import fetch_forex_data
         
-        # Create results dictionary
-        results = {
-            "timestamp": datetime.now().isoformat(),
-            "rates": {}
-        }
-        
-        # Process each currency pair
-        for _, row in df.iterrows():
-            key = f"{row['from_currency']}_{row['to_currency']}"
-            results["rates"][key] = row['exchange_rate']
-        
-        # Save to JSON
-        json_file = forex_file.replace('.csv', '.json')
-        with open(json_file, 'w') as f:
-            json.dump(results, f, indent=2)
+        # Check if we should use mock data (can be set in Airflow UI)
+        use_mock = False
+        try:
+            use_mock_var = Variable.get("use_mock_forex_data", default_var="false")
+            use_mock = use_mock_var.lower() == 'true'
+        except:
+            pass
             
-        logger.info(f"Processed data saved to {json_file}")
-        return json_file
+        logger.info(f"Use mock data setting: {use_mock}")
+        
+        # Fetch data using our existing module
+        df = fetch_forex_data(use_mock=use_mock)
+        
+        if df.empty:
+            logger.error("No data fetched")
+            return None
+            
+        logger.info(f"Successfully fetched {len(df)} exchange rates")
+        
+        # Pass the DataFrame to the next task via XCom
+        # First save to a file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        output_file = os.path.join(PROJECT_ROOT, 'data', f'airflow_forex_{timestamp}.csv')
+        df.to_csv(output_file, index=False)
+        
+        # Also include the result count
+        context['ti'].xcom_push(key='record_count', value=len(df))
+        return output_file
         
     except Exception as e:
-        logger.error(f"Error processing data: {str(e)}")
-        return False
+        logger.error(f"Error in fetch_forex_rates: {str(e)}")
+        # In case of error, return a flag to use mock data in the next attempt
+        context['ti'].xcom_push(key='use_mock_next', value=True)
+        return None
 
+def process_and_store_data(**context):
+    """Process forex data and store it in Snowflake or locally"""
+    logger = logging.getLogger("airflow.task")
+    logger.info("Starting data processing and storage task")
+    
+    try:
+        # Add the project root to the Python path
+        sys.path.insert(0, PROJECT_ROOT)
+        
+        # Get input file from previous task
+        ti = context['ti']
+        forex_file = ti.xcom_pull(task_ids='fetch_forex_rates')
+        
+        if not forex_file or not os.path.exists(forex_file):
+            logger.warning("No forex data file found, generating mock data")
+            # If no file exists, use mock data
+            from data_ingestion.fetch_data import generate_mock_data
+            df = generate_mock_data()
+        else:
+            # Read the CSV file
+            logger.info(f"Reading data from {forex_file}")
+            df = pd.read_csv(forex_file)
+        
+        # Process the data (convert timestamp to datetime)
+        logger.info("Processing data...")
+        if 'timestamp' in df.columns:
+            df['timestamp'] = pd.to_datetime(df['timestamp'])
+        
+        # Try storing to Snowflake first, fallback to local
+        try:
+            from data_storage.save_to_snowflake import save_to_snowflake
+            logger.info("Storing data to Snowflake...")
+            success = save_to_snowflake(df)
+            if success:
+                logger.info("Successfully stored data in Snowflake")
+            else:
+                logger.warning("Failed to store in Snowflake, falling back to local storage")
+                from data_storage.save_to_snowflake import save_locally
+                success = save_locally(df)
+        except ImportError:
+            logger.warning("Snowflake module not available, using local storage")
+            from data_storage.save_to_snowflake import save_locally
+            success = save_locally(df)
+        except Exception as e:
+            logger.error(f"Error with Snowflake: {str(e)}")
+            from data_storage.save_to_snowflake import save_locally
+            success = save_locally(df)
+            
+        return success
+            
+    except Exception as e:
+        logger.error(f"Error in process_and_store_data: {str(e)}")
+        return False
 
 # DAG definition
 default_args = {
@@ -121,7 +125,7 @@ default_args = {
     'start_date': datetime(2024, 3, 8, tzinfo=timezone('UTC')),
     'email': ['anwarmousa100@gmail.com'],
     'email_on_failure': True,
-    'retries': 1,
+    'retries': 2,
     'retry_delay': timedelta(minutes=5),
 }
 
@@ -129,7 +133,7 @@ with DAG(
     'forex_pipeline',
     default_args=default_args,
     description='Forex exchange rates pipeline',
-    schedule_interval='@daily',
+    schedule='@daily',
     catchup=False,
     tags=['forex'],
 ) as dag:
@@ -139,11 +143,11 @@ with DAG(
         python_callable=fetch_forex_rates,
     )
     
-    # Task 2: Process and transform data
-    process_task = PythonOperator(
-        task_id='process_forex_data',
-        python_callable=process_forex_data,
+    # Task 2: Process and store data
+    process_store_task = PythonOperator(
+        task_id='process_and_store_data',
+        python_callable=process_and_store_data,
     )
     
     # Set task dependencies
-    fetch_task >> process_task
+    fetch_task >> process_store_task

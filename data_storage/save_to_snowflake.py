@@ -6,6 +6,8 @@ import tempfile
 import csv
 from pathlib import Path
 from dotenv import load_dotenv
+import json
+from datetime import datetime
 
 # Setup logging with more details
 logging.basicConfig(
@@ -36,17 +38,64 @@ def get_snowflake_connection():
         'schema': os.environ.get('SNOWFLAKE_SCHEMA')
     }
 
+def save_locally(df, table_name='FOREX_RATES'):
+    """Save DataFrame locally when Snowflake is unavailable"""
+    if df.empty:
+        logger.warning("Empty DataFrame provided, nothing to save locally")
+        return False
+    
+    try:
+        # Create data directory
+        data_dir = Path(__file__).parent.parent / 'data'
+        data_dir.mkdir(exist_ok=True)
+        
+        # Save as CSV with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{table_name.lower()}_{timestamp}.csv"
+        filepath = data_dir / filename
+        
+        df.to_csv(filepath, index=False)
+        logger.info(f"Data saved locally to {filepath}")
+        
+        # Also save as JSON for easier consumption
+        json_file = filepath.with_suffix('.json')
+        
+        # Convert to dictionary format
+        results = []
+        for _, row in df.iterrows():
+            row_dict = row.to_dict()
+            # Convert timestamps to strings for JSON serialization
+            for key, value in row_dict.items():
+                if isinstance(value, (pd.Timestamp, datetime)):
+                    row_dict[key] = value.isoformat()
+            results.append(row_dict)
+        
+        # Save to JSON
+        with open(json_file, 'w') as f:
+            json.dump({
+                "timestamp": datetime.now().isoformat(),
+                "data": results
+            }, f, indent=2)
+        
+        logger.info(f"JSON data saved to {json_file}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error saving data locally: {str(e)}")
+        return False
+
 def save_to_snowflake(df, table_name='FOREX_RATES'):
     """Save DataFrame to Snowflake with enhanced debugging"""
     if df.empty:
         logger.warning("Empty DataFrame provided, nothing to save")
         return False
-        
-    conn = None
-    cursor = None
-    temp_file_path = None
     
+    # Try to use Snowflake, fall back to local storage if needed
     try:
+        conn = None
+        cursor = None
+        temp_file_path = None
+        
         # Get Snowflake connection parameters
         snow_conn = get_snowflake_connection()
         
@@ -141,16 +190,20 @@ def save_to_snowflake(df, table_name='FOREX_RATES'):
         logger.info("Transaction committed successfully")
         
         return True
-            
+        
     except Exception as e:
         logger.error(f"Error saving to Snowflake: {str(e)}")
+        logger.info("Falling back to local storage")
+        
         if conn:
             try:
                 conn.rollback()
                 logger.info("Transaction rolled back")
             except:
                 pass
-        return False
+                
+        # Fall back to local storage
+        return save_locally(df, table_name)
         
     finally:
         if cursor:
