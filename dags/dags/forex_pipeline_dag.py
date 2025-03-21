@@ -13,7 +13,7 @@ from airflow.models import Variable
 
 # Define paths
 PROJECT_ROOT = '/home/anwar/Real-time-Data-Pipeline'
-sys.path.append(PROJECT_ROOT)  # Add project root to Python path
+sys.path.append(PROJECT_ROOT)  
 
 # Create data directory if needed
 Path(os.path.join(PROJECT_ROOT, 'data')).mkdir(parents=True, exist_ok=True)
