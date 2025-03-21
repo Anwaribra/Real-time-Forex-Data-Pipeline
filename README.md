@@ -1,4 +1,4 @@
-# Real-time Forex Data Pipeline
+# Real-time Data Pipeline
 
 ## Project Overview
 A data pipeline project that fetches real-time currency exchange rates from [Alpha Vantage API](https://www.alphavantage.co), processes the data, and stores it in Snowflake data warehouse. The pipeline is orchestrated using Apache Airflow and can also be run in Docker containers.
