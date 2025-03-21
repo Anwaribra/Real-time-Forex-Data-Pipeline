@@ -3,6 +3,38 @@
 ## Project Overview
 A data pipeline project that fetches real-time currency exchange rates from [Alpha Vantage API](https://www.alphavantage.co), processes the data, and stores it in Snowflake data warehouse. The pipeline is orchestrated using Apache Airflow and can also be run in Docker containers.
 
+
+
+## Project Structure
+```
+Real-time-Data-Pipeline/
+├── config/                    
+│   └── config.json           
+├── dags/                     
+│   └── dags/
+│       └── forex_pipeline_dag.py
+├── data_ingestion/           
+│   ├── fetch_data.py         
+│   ├── fetch_historical_data.py 
+│   ├── cleanup.py            
+│   └── __init__.py
+├── data_storage/             
+│   ├── save_to_snowflake.py 
+│   ├── simplified_storage.py 
+├── Dockerfile               
+├── docker-compose.yaml      
+└── requirements.txt          
+```
+
+## Technologies Used
+- Python 3.9
+- Apache Airflow 2.7.1
+- Snowflake
+- Alpha Vantage API
+- Docker
+- Pandas & NumPy
+
+  
 ## Features
 - Real-time forex data fetching
 - Historical data collection
@@ -14,34 +46,6 @@ A data pipeline project that fetches real-time currency exchange rates from [Alp
 - Support for multiple currency pairs
 - Rate viewing utility
 
-## Project Structure
-```
-Real-time-Data-Pipeline/
-├── config/                    # Configuration files
-│   └── config.json           # API keys and settings
-├── dags/                     # Airflow DAGs
-│   └── dags/
-│       └── forex_pipeline_dag.py
-├── data_ingestion/           # Data fetching modules
-│   ├── fetch_data.py         # API and mock data functions
-│   ├── fetch_historical_data.py # Historical data fetching
-│   ├── cleanup.py            # Data cleanup utilities
-│   └── __init__.py
-├── data_storage/             # Data storage operations
-│   ├── save_to_snowflake.py  # Snowflake integration
-│   ├── simplified_storage.py # Local storage fallback
-├── Dockerfile                # Docker configuration
-├── docker-compose.yaml       # Docker compose configuration
-└── requirements.txt          # Python dependencies
-```
-
-## Technologies Used
-- Python 3.9
-- Apache Airflow 2.7.1
-- Snowflake
-- Alpha Vantage API
-- Docker
-- Pandas & NumPy
   
 ## Pipeline Architecture
 ### Snowflake Compute Warehouse
