@@ -31,16 +31,16 @@ def test_fetch_data():
         df = fetch_forex_data()
         
         if df.empty:
-            logger.error("❌ Failed: No data returned from fetch_forex_data()")
+            logger.error(" Failed: No data returned from fetch_forex_data()")
             return False
             
-        logger.info(f"✅ Success: Fetched {len(df)} rows of current forex data")
+        logger.info(f" Success: Fetched {len(df)} rows of current forex data")
         logger.info(f"Data sample:\n{df.head()}")
         
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed: Error in fetch_data test: {str(e)}")
+        logger.error(f"Failed: Error in fetch_data test: {str(e)}")
         return False
 
 def test_historical_data():
@@ -90,14 +90,14 @@ def test_snowflake_connection():
         success = save_to_snowflake(test_df, table_name=table_name)
         
         if not success:
-            logger.error("❌ Failed: Could not save data to Snowflake")
+            logger.error(" Failed: Could not save data to Snowflake")
             return False
             
-        logger.info(f"✅ Success: Saved test data to Snowflake table {table_name}")
+        logger.info(f" Success: Saved test data to Snowflake table {table_name}")
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed: Error in Snowflake test: {str(e)}")
+        logger.error(f" Failed: Error in Snowflake test: {str(e)}")
         return False
 
 def run_all_tests():
@@ -122,16 +122,16 @@ def run_all_tests():
     all_passed = True
     
     for name, result in results.items():
-        status = "✅ PASSED" if result else "❌ FAILED"
+        status = "PASSED" if result else " FAILED"
         logger.info(f"{name}: {status}")
         if not result:
             all_passed = False
             
     if all_passed:
-        logger.info("\n🎉 All tests passed! Your pipeline is ready.")
+        logger.info("\n All tests passed! Your pipeline is ready.")
         return 0
     else:
-        logger.error("\n❌ Some tests failed. Please check the logs.")
+        logger.error("\n Some tests failed. Please check the logs.")
         return 1
 
 if __name__ == "__main__":

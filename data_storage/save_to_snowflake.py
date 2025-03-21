@@ -230,6 +230,6 @@ if __name__ == "__main__":
     success = save_to_snowflake(test_df)
     
     if success:
-        print("✅ Test completed successfully!")
+        print(" Test completed successfully!")
     else:
-        print("❌ Test failed!") 
+        print(" Test failed!") 

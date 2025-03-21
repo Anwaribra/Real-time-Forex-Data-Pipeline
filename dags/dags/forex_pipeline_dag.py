@@ -24,23 +24,11 @@ def fetch_forex_rates(**context):
     logger.info("Starting Airflow fetch task")
     
     try:
-        # Import our existing fetch functionality
-        # First, add the project root to the Python path
+        
         sys.path.insert(0, PROJECT_ROOT)
         from data_ingestion.fetch_data import fetch_forex_data
         
-        # Check if we should use mock data (can be set in Airflow UI)
-        use_mock = False
-        try:
-            use_mock_var = Variable.get("use_mock_forex_data", default_var="false")
-            use_mock = use_mock_var.lower() == 'true'
-        except:
-            pass
-            
-        logger.info(f"Use mock data setting: {use_mock}")
-        
-        # Fetch data using our existing module
-        df = fetch_forex_data(use_mock=use_mock)
+        df = fetch_forex_data()
         
         if df.empty:
             logger.error("No data fetched")
@@ -48,20 +36,17 @@ def fetch_forex_rates(**context):
             
         logger.info(f"Successfully fetched {len(df)} exchange rates")
         
-        # Pass the DataFrame to the next task via XCom
-        # First save to a file
+        
         timestamp = datetime.now().strftime("%Y%m%d_%H%M")
         output_file = os.path.join(PROJECT_ROOT, 'data', f'airflow_forex_{timestamp}.csv')
         df.to_csv(output_file, index=False)
         
-        # Also include the result count
+        
         context['ti'].xcom_push(key='record_count', value=len(df))
         return output_file
         
     except Exception as e:
         logger.error(f"Error in fetch_forex_rates: {str(e)}")
-        # In case of error, return a flag to use mock data in the next attempt
-        context['ti'].xcom_push(key='use_mock_next', value=True)
         return None
 
 def process_and_store_data(**context):
@@ -70,29 +55,29 @@ def process_and_store_data(**context):
     logger.info("Starting data processing and storage task")
     
     try:
-        # Add the project root to the Python path
+        
         sys.path.insert(0, PROJECT_ROOT)
         
-        # Get input file from previous task
+        
         ti = context['ti']
         forex_file = ti.xcom_pull(task_ids='fetch_forex_rates')
         
         if not forex_file or not os.path.exists(forex_file):
-            logger.warning("No forex data file found, generating mock data")
-            # If no file exists, use mock data
-            from data_ingestion.fetch_data import generate_mock_data
-            df = generate_mock_data()
+            logger.warning("No forex data file found, skipping processing")
+            return None
         else:
-            # Read the CSV file
             logger.info(f"Reading data from {forex_file}")
             df = pd.read_csv(forex_file)
         
-        # Process the data (convert timestamp to datetime)
+        if df.empty:
+            logger.warning("Empty dataframe, nothing to process")
+            return None
+        
         logger.info("Processing data...")
         if 'timestamp' in df.columns:
             df['timestamp'] = pd.to_datetime(df['timestamp'])
         
-        # Try storing to Snowflake first, fallback to local
+       
         try:
             from data_storage.save_to_snowflake import save_to_snowflake
             logger.info("Storing data to Snowflake...")

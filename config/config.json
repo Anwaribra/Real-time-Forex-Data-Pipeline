@@ -1,6 +1,6 @@
 {
     "forex_api_url": "https://www.alphavantage.co/query",
-    "forex_api_key": "UY7INDCN4HZXSJJX",
+    "forex_api_key": "FC25AASL7LL4898M",     
     "currency_pairs": [
         "EUR/USD",
         "USD/EGP",
@@ -22,3 +22,4 @@
         "backup_retention_days": 30
     }
 }
+
