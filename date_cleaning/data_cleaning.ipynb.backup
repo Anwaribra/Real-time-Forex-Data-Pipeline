@@ -34,6 +34,7 @@
     }
    ],
    "source": [
+    "import os  # Added to prevent \"os is not defined\" error\n",
     "data_folder = \"data\"\n",
     "\n",
     "json_files = [f for f in os.listdir(data_folder) if f.endswith(\".json\")]\n",

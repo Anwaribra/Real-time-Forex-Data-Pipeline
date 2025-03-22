@@ -51,7 +51,7 @@ Real-time-Data-Pipeline/
 ### Snowflake Compute Warehouse
 The pipeline uses a dedicated compute warehouse in Snowflake:
 
-![Snowflake Compute Warehouse](config/icon/P1.png)
+![Snowflake Compute Warehouse](config/icon/DWH.png)
 ## Snowflake Integration
 The pipeline creates the following in Snowflake:
 - Database (if not exists)
@@ -73,7 +73,8 @@ The data pipeline follows this architecture in Snowflake:
 ## Airflow DAG
 The Airflow DAG consists of two main tasks:
 
-![Airflow DAG](config/icon/p2.png)
+![Airflow DAG](config/icon/Dags.png)
 
 1. `fetch_forex_rates` - Python operator that fetches data from Alpha Vantage API
-2. `process_and_store_data` - Python operator that processes and stores data in Snowflake
+2. `clean_data` - Cleans and transforms data using PapermillOperator.
+3. `process_and_store_data` - Python operator that processes and stores data in Snowflake

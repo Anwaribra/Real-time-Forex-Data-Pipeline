@@ -5,17 +5,20 @@ import logging
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta
-from pendulum import timezone
+from pendulum import timezone 
 
 from airflow import DAG
+from airflow.operators.python import PythonOperator     #PythonOperator for running python scripts
+from airflow.models import Variable 
+
+from airflow.providers.papermill.operators.papermill import PapermillOperator  # PapermillOperator for running python scripts in jupyter notebook
 from airflow.operators.python import PythonOperator
-from airflow.models import Variable
 
 # Define paths
 PROJECT_ROOT = '/home/anwar/Real-time-Data-Pipeline'
 sys.path.append(PROJECT_ROOT)  
 
-# Create data directory if needed
+
 Path(os.path.join(PROJECT_ROOT, 'data')).mkdir(parents=True, exist_ok=True)
 
 def fetch_forex_rates(**context):
@@ -127,12 +130,18 @@ with DAG(
         task_id='fetch_forex_rates',
         python_callable=fetch_forex_rates,
     )
-    
-    # Task 2: Process and store data
+    # Task 2: Cleaning data
+    clean_task = PapermillOperator(
+        task_id='clean_data',
+        input_nb='date_cleaning/data_cleaning.ipynb',
+        output_nb='date_cleaning/data_cleaning.ipynb',
+    )
+
+    # Task 3: Process and store data
     process_store_task = PythonOperator(
         task_id='process_and_store_data',
         python_callable=process_and_store_data,
     )
     
     # Set task dependencies
-    fetch_task >> process_store_task
+    fetch_task >> clean_task >> process_store_task
