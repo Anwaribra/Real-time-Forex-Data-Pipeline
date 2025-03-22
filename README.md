@@ -71,7 +71,7 @@ The data pipeline follows this architecture in Snowflake:
 3. `FOREX_RATES` - Final table for storing the processed data
 
 ## Airflow DAG
-The Airflow DAG consists of two main tasks:
+The Airflow DAG consists of three main tasks:
 
 ![Airflow DAG](config/icon/Dags.png)
 
