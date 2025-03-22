@@ -7,7 +7,7 @@ historical_forex.log
 data_processing.log
 
 # Data files
-.tests/
+tests/
 
 # Environment variables
 .env
