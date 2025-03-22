@@ -13,6 +13,9 @@ Real-time-Data-Pipeline/
 ├── dags/                     
 │   └── dags/
 │       └── forex_pipeline_dag.py
+├── data/                     
+├── data_cleaning/             
+│   └── data_cleaning.ipynb
 ├── data_ingestion/           
 │   ├── fetch_data.py         
 │   ├── fetch_historical_data.py 
@@ -20,7 +23,7 @@ Real-time-Data-Pipeline/
 │   └── __init__.py
 ├── data_storage/             
 │   ├── save_to_snowflake.py 
-│   ├── simplified_storage.py 
+│   ├── simplified_storage.py                      
 ├── Dockerfile               
 ├── docker-compose.yaml      
 └── requirements.txt          
