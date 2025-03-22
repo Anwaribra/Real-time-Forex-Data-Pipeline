@@ -133,8 +133,8 @@ with DAG(
     # Task 2: Cleaning data
     clean_task = PapermillOperator(
         task_id='clean_data',
-        input_nb='date_cleaning/data_cleaning.ipynb',
-        output_nb='date_cleaning/data_cleaning.ipynb',
+        input_nb='data_cleaning/data_cleaning.ipynb',
+        output_nb='data_cleaning/clean_data_output.ipynb',
     )
 
     # Task 3: Process and store data
