@@ -4,6 +4,10 @@
 A data pipeline project that fetches real-time currency exchange rates from [Alpha Vantage API](https://www.alphavantage.co), processes the data, and stores it in Snowflake data warehouse. The pipeline is orchestrated using Apache Airflow and can also be run in Docker containers.
 
 
+## Pipeline Architecture
+
+![Pipeline Architecture](config/icon/Pipelinearchitecture.png)
+
 
 ## Project Structure
 ```
