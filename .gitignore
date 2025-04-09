@@ -5,15 +5,19 @@ forex_data.log
 forex_processing.log
 historical_forex.log
 data_processing.log
+upload_all_data.log
+fetch_historical.log
 
 # Data files
+data/*.csv
+!data/historical_*.csv
 tests/
 
-# Environment variables
+# Environment and Configuration
 .env
-
-# Actual config with sensitive data
+.env.*
 config/config.json
+config/*.local.json
 
 # Python
 __pycache__/
@@ -37,20 +41,26 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*.sublime-workspace
+*.sublime-project
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Config files with sensitive data
-# config/config.json  # Uncomment if you want to ignore config file
-
-# Virtual Environment
-venv/
-ENV/ 
+*.log
+.directory 
