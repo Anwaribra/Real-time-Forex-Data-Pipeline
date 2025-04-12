@@ -1,96 +1,139 @@
 import requests
-import json
 import pandas as pd
-from datetime import datetime
 import logging
+from datetime import datetime
 import time
 from pathlib import Path
+import json
+from typing import Optional
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("forex_data.log"), logging.StreamHandler()],
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-def load_config() -> dict:
-    config_path = Path(__file__).parent.parent / "config" / "config.json"
-    with open(config_path, "r") as file:
-        return json.load(file)
-
-def save_data_files(df):
-    data_dir = Path(__file__).parent.parent / "data"
-    data_dir.mkdir(exist_ok=True)
+class ForexDataFetcher:
+    def __init__(self, config_path="config/config.json"):
+        """Initialize with configuration"""
+        self.config = self._load_config(config_path)
+        self.api_key = self.config["forex_api_key"]
+        self.api_url = self.config["forex_api_url"]
+        self.data_dir = Path("data")
+        self.data_dir.mkdir(exist_ok=True)
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    csv_path = data_dir / f"forex_rates_{timestamp}.csv"
-    df.to_csv(csv_path, index=False)
-    logger.info(f"Data saved to {csv_path}")
+    def _load_config(self, config_path: str) -> dict:
+        try:
+            with open(config_path) as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading config: {e}")
+            raise
     
-    return csv_path
-
-def fetch_forex_data() -> pd.DataFrame:
-    logger.info("Starting forex data fetch")
-    
-    try:
-        config = load_config()
-        logger.info(f"Config loaded, found {len(config['currency_pairs'])} currency pairs")
-        results = []
-
-        for pair in config["currency_pairs"]:
-            try:
-                from_currency, to_currency = pair.split("/")
+    def fetch_forex_data(self, from_currency: str, to_currency: str) -> Optional[pd.DataFrame]:
+        """Fetch forex data from Alpha Vantage API"""
+        try:
+            # Special handling for EUR/EGP
+            if from_currency == "EUR" and to_currency == "EGP":
+                return self._calculate_eur_egp()
+            
+            time.sleep(12)
+            
+            params = {
+                "function": "FX_DAILY",
+                "from_symbol": from_currency,
+                "to_symbol": to_currency,
+                "apikey": self.api_key,
+                "outputsize": "full"
+            }
+            
+            logger.info(f"Fetching {from_currency}/{to_currency} data...")
+            response = requests.get(self.api_url, params=params)
+            response.raise_for_status()
+            data = response.json()
+            
+            if "Error Message" in data:
+                logger.error(f"API Error: {data['Error Message']}")
+                return None
                 
-                params = {
-                    "function": "CURRENCY_EXCHANGE_RATE",
-                    "from_currency": from_currency,
-                    "to_currency": to_currency,
-                    "apikey": config["forex_api_key"],
-                }
-
-                response = requests.get(config["forex_api_url"], params=params, timeout=15)
-                
-                data = response.json()
-                if "Error Message" in data:
-                    logger.error(f"API error: {data['Error Message']}")
-                    continue
-                    
-                if "Note" in data:
-                    logger.warning(f"API rate limit reached. Pausing...")
-                    time.sleep(60)
-                    continue
-
-                if "Realtime Currency Exchange Rate" in data:
-                    rate_data = data["Realtime Currency Exchange Rate"]
-                    exchange_rate = float(rate_data["5. Exchange Rate"])
-                    
-                    results.append({
-                        "from_currency": from_currency,
-                        "to_currency": to_currency,
-                        "exchange_rate": exchange_rate,
-                        "timestamp": datetime.now().isoformat(),
-                    })
-                else:
-                    logger.error(f"Unexpected response format for {pair}: {data.keys()}")
-
-                time.sleep(3)
-
-            except Exception as e:
-                logger.error(f"Failed to fetch data for {pair}: {str(e)}")
-
-        if results:
-            df = pd.DataFrame(results)
-            save_data_files(df)
+            if "Note" in data:
+                logger.warning(f"API limit warning: {data['Note']}")
+                time.sleep(60)  
+                return self.fetch_forex_data(from_currency, to_currency)
+            
+            if "Time Series FX (Daily)" not in data:
+                logger.error("No data found in API response")
+                return None
+            
+            # Convert to DataFrame
+            df = pd.DataFrame.from_dict(data["Time Series FX (Daily)"], orient="index")
+            df.index = pd.to_datetime(df.index)
+            df.columns = ["Open", "High", "Low", "Close"]
+            df = df.astype(float).round(4)
+            
+            logger.info(f"Successfully fetched {len(df)} records")
             return df
+            
+        except Exception as e:
+            logger.error(f"Error fetching data: {str(e)}")
+            return None
+    
+    def _calculate_eur_egp(self) -> Optional[pd.DataFrame]:
+        """Calculate EUR/EGP using EUR/USD and USD/EGP rates"""
+        try:
+            # Get EUR/USD data
+            eur_usd = self.fetch_forex_data("EUR", "USD")
+            if eur_usd is None:
+                return None
+            
+            # Get USD/EGP data
+            usd_egp = self.fetch_forex_data("USD", "EGP")
+            if usd_egp is None:
+                return None
+            
+            # Calculate cross rates
+            eur_egp = pd.DataFrame(index=eur_usd.index)
+            for col in ["Open", "High", "Low", "Close"]:
+                eur_egp[col] = (eur_usd[col] * usd_egp[col]).round(4)
+            
+            return eur_egp
+            
+        except Exception as e:
+            logger.error(f"Error calculating EUR/EGP: {str(e)}")
+            return None
+    
+    def save_data(self, df: pd.DataFrame, pair: str) -> None:
+        """Save data to CSV file"""
+        try:
+            filename = f"historical_{pair.replace('/', '_')}.csv"
+            file_path = self.data_dir / filename
+            
+            # Sort by date descending
+            df = df.sort_index(ascending=False)
+            
+            # Save with proper formatting
+            df.to_csv(file_path, float_format='%.4f')
+            logger.info(f"Saved {len(df)} records to {filename}")
+            
+        except Exception as e:
+            logger.error(f"Error saving data: {str(e)}")
+    
+    def update_all_pairs(self) -> None:
+        """Fetch and save data for all currency pairs"""
+        pairs = [
+            ("USD", "EGP"),
+            ("EUR", "USD"),
+            ("EUR", "EGP")
+        ]
         
-        logger.warning("No data was fetched from the API")
-        return pd.DataFrame()
-        
-    except Exception as e:
-        logger.error(f"Fatal error in fetch_forex_data: {str(e)}")
-        return pd.DataFrame()
+        for from_curr, to_curr in pairs:
+            if df := self.fetch_forex_data(from_curr, to_curr):
+                self.save_data(df, f"{from_curr}_{to_curr}")
 
 if __name__ == "__main__":
-    result = fetch_forex_data()
-    print(f"Results shape: {result.shape}")
-    print(result)
+    try:
+        fetcher = ForexDataFetcher()
+        fetcher.update_all_pairs()
+        logger.info("Data update completed successfully")
+    except Exception as e:
+        logger.error(f"Fatal error: {e}")
