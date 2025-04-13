@@ -13,65 +13,133 @@ CREATE OR REPLACE TABLE FOREX_DATA.SILVER.forex_rates (
     high_rate FLOAT NOT NULL,
     low_rate FLOAT NOT NULL,
     close_rate FLOAT NOT NULL,
-    PRIMARY KEY (date, currency_pair),
-    CONSTRAINT valid_high_low CHECK (high_rate >= low_rate),
-    CONSTRAINT valid_open CHECK (open_rate >= low_rate AND open_rate <= high_rate),
-    CONSTRAINT valid_close CHECK (close_rate >= low_rate AND close_rate <= high_rate),
-    CONSTRAINT valid_pair CHECK (currency_pair IN ('EUR/USD', 'EUR/EGP', 'USD/EGP'))
+    inserted_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY (date, currency_pair)
 );
 
--- Load data from bronze to silver with validation
-CREATE OR REPLACE PROCEDURE FOREX_DATA.SILVER.load_forex_rates()
-RETURNS VARCHAR
-LANGUAGE SQL
-AS
-$$
-BEGIN
-    -- Clear existing data
-    TRUNCATE TABLE FOREX_DATA.SILVER.forex_rates;
-    
-    -- Load EUR/USD
-    INSERT INTO FOREX_DATA.SILVER.forex_rates
-    SELECT
-        date,
-        'EUR/USD' as currency_pair,
-        open_rate,
-        high_rate,
-        low_rate,
-        close_rate
-    FROM FOREX_DATA.BRONZE.forex_eur_usd
-    WHERE high_rate >= low_rate
-    AND open_rate >= low_rate AND open_rate <= high_rate
-    AND close_rate >= low_rate AND close_rate <= high_rate;
-    
-    -- Load EUR/EGP
-    INSERT INTO FOREX_DATA.SILVER.forex_rates
-    SELECT
-        date,
-        'EUR/EGP' as currency_pair,
-        open_rate,
-        high_rate,
-        low_rate,
-        close_rate
-    FROM FOREX_DATA.BRONZE.forex_eur_egp
-    WHERE high_rate >= low_rate
-    AND open_rate >= low_rate AND open_rate <= high_rate
-    AND close_rate >= low_rate AND close_rate <= high_rate;
-    
-    -- Load USD/EGP
-    INSERT INTO FOREX_DATA.SILVER.forex_rates
-    SELECT
-        date,
-        'USD/EGP' as currency_pair,
-        open_rate,
-        high_rate,
-        low_rate,
-        close_rate
-    FROM FOREX_DATA.BRONZE.forex_usd_egp
-    WHERE high_rate >= low_rate
-    AND open_rate >= low_rate AND open_rate <= high_rate
-    AND close_rate >= low_rate AND close_rate <= high_rate;
-    
-    RETURN 'Success';
-END;
-$$; 
+-- Create a view for analytics with computed columns
+CREATE OR REPLACE VIEW FOREX_DATA.SILVER.forex_rates_analytics AS
+SELECT 
+    date,
+    currency_pair,
+    open_rate,
+    high_rate,
+    low_rate,
+    close_rate,
+    -- Time components
+    YEAR(date) as year,
+    MONTH(date) as month,
+    QUARTER(date) as quarter,
+    DAYOFWEEK(date) as day_of_week,
+    -- Daily price movement
+    (close_rate - open_rate) as daily_change,
+    ((close_rate - open_rate) / open_rate * 100) as daily_change_percent,
+    -- Daily volatility
+    (high_rate - low_rate) as daily_range,
+    ((high_rate - low_rate) / open_rate * 100) as daily_range_percent,
+    inserted_at
+FROM FOREX_DATA.SILVER.forex_rates;
+
+-- Load data from PUBLIC schema with validation
+INSERT INTO FOREX_DATA.SILVER.forex_rates (
+    date,
+    currency_pair,
+    open_rate,
+    high_rate,
+    low_rate,
+    close_rate
+)
+SELECT DISTINCT
+    CAST(TRIM(date) AS DATE),
+    'EUR/USD' as currency_pair,
+    NULLIF(TRIM(open_rate), '')::FLOAT,
+    NULLIF(TRIM(high_rate), '')::FLOAT,
+    NULLIF(TRIM(low_rate), '')::FLOAT,
+    NULLIF(TRIM(close_rate), '')::FLOAT
+FROM PUBLIC.FOREX_RATES_EUR_USD
+WHERE 
+    date IS NOT NULL
+    AND open_rate > 0
+    AND high_rate > 0
+    AND low_rate > 0
+    AND close_rate > 0
+    AND high_rate >= low_rate
+    AND open_rate >= low_rate 
+    AND open_rate <= high_rate
+    AND close_rate >= low_rate 
+    AND close_rate <= high_rate
+    AND date >= '2000-01-01' 
+    AND date <= CURRENT_DATE();
+
+INSERT INTO FOREX_DATA.SILVER.forex_rates (
+    date,
+    currency_pair,
+    open_rate,
+    high_rate,
+    low_rate,
+    close_rate
+)
+SELECT DISTINCT
+    CAST(TRIM(date) AS DATE),
+    'EUR/EGP' as currency_pair,
+    NULLIF(TRIM(open_rate), '')::FLOAT,
+    NULLIF(TRIM(high_rate), '')::FLOAT,
+    NULLIF(TRIM(low_rate), '')::FLOAT,
+    NULLIF(TRIM(close_rate), '')::FLOAT
+FROM PUBLIC.FOREX_RATES_EUR_EGP
+WHERE 
+    date IS NOT NULL
+    AND open_rate > 0
+    AND high_rate > 0
+    AND low_rate > 0
+    AND close_rate > 0
+    AND high_rate >= low_rate
+    AND open_rate >= low_rate 
+    AND open_rate <= high_rate
+    AND close_rate >= low_rate 
+    AND close_rate <= high_rate
+    AND date >= '2000-01-01' 
+    AND date <= CURRENT_DATE();
+
+INSERT INTO FOREX_DATA.SILVER.forex_rates (
+    date,
+    currency_pair,
+    open_rate,
+    high_rate,
+    low_rate,
+    close_rate
+)
+SELECT DISTINCT
+    CAST(TRIM(date) AS DATE),
+    'USD/EGP' as currency_pair,
+    NULLIF(TRIM(open_rate), '')::FLOAT,
+    NULLIF(TRIM(high_rate), '')::FLOAT,
+    NULLIF(TRIM(low_rate), '')::FLOAT,
+    NULLIF(TRIM(close_rate), '')::FLOAT
+FROM PUBLIC.FOREX_RATES_USD_EGP
+WHERE 
+    date IS NOT NULL
+    AND open_rate > 0
+    AND high_rate > 0
+    AND low_rate > 0
+    AND close_rate > 0
+    AND high_rate >= low_rate
+    AND open_rate >= low_rate 
+    AND open_rate <= high_rate
+    AND close_rate >= low_rate 
+    AND close_rate <= high_rate
+    AND date >= '2000-01-01' 
+    AND date <= CURRENT_DATE(); 
+
+
+
+    -- Check the data
+SELECT currency_pair, COUNT(*) 
+FROM FOREX_DATA.SILVER.forex_rates 
+GROUP BY currency_pair;
+
+-- Check the analytics
+SELECT * 
+FROM FOREX_DATA.SILVER.forex_rates_analytics 
+ORDER BY date DESC 
+LIMIT 5;
