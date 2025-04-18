@@ -1,7 +1,7 @@
 # Core Dependencies
 apache-airflow==2.7.1
 pandas==2.1.1
-numpy==2.0.0
+numpy==1.26.4
 requests==2.31.0
 
 # Database Dependencies
