@@ -3,8 +3,13 @@ import pandas as pd
 import logging
 from pathlib import Path
 from datetime import datetime
+from snowflake.connector import connect
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
 
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -14,6 +19,22 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+def get_snowflake_connection():
+    """Create Snowflake connection"""
+    try:
+        conn = connect(
+            user=os.getenv('SNOWFLAKE_USER'),
+            password=os.getenv('SNOWFLAKE_PASSWORD'),
+            account=os.getenv('SNOWFLAKE_ACCOUNT'),
+            warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
+            database=os.getenv('SNOWFLAKE_DATABASE'),
+            schema=os.getenv('SNOWFLAKE_SCHEMA')
+        )
+        return conn
+    except Exception as e:
+        logger.error(f"Error connecting to Snowflake: {e}")
+        raise
 
 def normalize_column_names(df):
     """Normalize column names from different formats"""
@@ -44,9 +65,67 @@ def normalize_column_names(df):
     
     return df
 
-def process_forex_data():
-    """Process raw forex data from CSV files"""
+def save_to_snowflake(df, table_name, conn):
+    """Save DataFrame to Snowflake table"""
     try:
+        # Create cursor
+        cursor = conn.cursor()
+        
+        # Create table if not exists
+        create_table_sql = f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            date DATE,
+            currency_pair VARCHAR(7),
+            open_rate FLOAT,
+            high_rate FLOAT,
+            low_rate FLOAT,
+            close_rate FLOAT,
+            inserted_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+        )
+        """
+        cursor.execute(create_table_sql)
+        
+        # Prepare data for insertion
+        values = []
+        for _, row in df.iterrows():
+            values.append((
+                row['date'],
+                row['currency_pair'],
+                float(row['open']),
+                float(row['high']),
+                float(row['low']),
+                float(row['close'])
+            ))
+        
+        # Insert data with upsert
+        insert_sql = f"""
+        INSERT INTO {table_name} (date, currency_pair, open_rate, high_rate, low_rate, close_rate)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (date, currency_pair) DO UPDATE SET
+            open_rate = EXCLUDED.open_rate,
+            high_rate = EXCLUDED.high_rate,
+            low_rate = EXCLUDED.low_rate,
+            close_rate = EXCLUDED.close_rate,
+            inserted_at = CURRENT_TIMESTAMP()
+        """
+        
+        cursor.executemany(insert_sql, values)
+        conn.commit()
+        
+        logger.info(f"Successfully saved {len(values)} records to {table_name}")
+        
+    except Exception as e:
+        logger.error(f"Error saving to Snowflake: {e}")
+        raise
+    finally:
+        cursor.close()
+
+def process_forex_data():
+    """Process raw forex data from CSV files and save to Snowflake"""
+    try:
+        # Get Snowflake connection
+        conn = get_snowflake_connection()
+        
         # Load data from CSV files
         data_dir = Path("data")
         for file_path in data_dir.glob("historical_*_*.csv"):
@@ -61,7 +140,7 @@ def process_forex_data():
                 df = normalize_column_names(pd.read_csv(file_path))
                 df['date'] = pd.to_datetime(df['date'])
                 
-               
+                # Process records
                 records = []
                 for _, row in df.iterrows():
                     records.append({
@@ -73,11 +152,12 @@ def process_forex_data():
                         'close': float(row['close'])
                     })
                 
-                # Convert to DataFrame for easier handling
+                # Convert to DataFrame
                 forex_df = pd.DataFrame(records)
                 
-                # Return the processed data
-                yield forex_df
+                # Save to Snowflake
+                table_name = f"FOREX_RATES_{pair.replace('/', '_')}"
+                save_to_snowflake(forex_df, table_name, conn)
                 
                 logger.info(f"Processed {len(records)} records for {display_pair}")
             
@@ -87,8 +167,9 @@ def process_forex_data():
         
     except Exception as e:
         logger.error(f"Error: {e}")
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 if __name__ == "__main__":
-    # Process raw data only
-    for forex_data in process_forex_data():
-        print(f"Processed {len(forex_data)} records")
+    process_forex_data()
