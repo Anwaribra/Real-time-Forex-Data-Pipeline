@@ -1,13 +1,9 @@
-# Core Dependencies
-pandas==2.1.1
-numpy==1.26.4
-requests==2.31.0
-
-# Dashboard Dependencies
-streamlit==1.32.0
-plotly==5.18.0
-matplotlib==3.8.2
-altair==5.2.0
+# Minimal dependencies
+pandas>=1.5.0
+numpy>=1.22.0
+streamlit>=1.10.0
+plotly>=5.0.0
+matplotlib>=3.5.0
 
 # Configuration
 python-dotenv==1.0.0 

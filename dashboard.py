@@ -26,7 +26,6 @@ This dashboard visualizes historical forex data for different currency pairs.
 def load_data(file_path):
     try:
         df = pd.read_csv(file_path)
-        # Rename columns if they have prefixes
         df.columns = [col.replace('1. ', '').replace('2. ', '').replace('3. ', '').replace('4. ', '') 
                       for col in df.columns]
         
@@ -69,30 +68,21 @@ def add_indicators(df):
     df['SMA_20'] = df['close'].rolling(window=20).mean()
     df['SMA_50'] = df['close'].rolling(window=50).mean()
     df['SMA_200'] = df['close'].rolling(window=200).mean()
-    
-   
     df['daily_change'] = df['close'] - df['open']
     df['daily_change_pct'] = (df['close'] - df['open']) / df['open'] * 100
-    
-    
     df['daily_range'] = df['high'] - df['low']
     df['daily_range_pct'] = df['daily_range'] / df['open'] * 100
     
     return df
 
-
 st.sidebar.header("Settings")
-
 
 data_dir = Path("data")
 forex_files = list(data_dir.glob("historical_*.csv"))
 pair_options = [file.stem.replace('historical_', '').replace('_', '/') for file in forex_files]
-
-
 selected_pair = st.sidebar.selectbox("Select Currency Pair", pair_options, index=0)
 file_name = f"historical_{selected_pair.replace('/', '_')}.csv"
 file_path = data_dir / file_name
-
 
 data = load_data(file_path)
 
@@ -107,16 +97,13 @@ if data is not None:
         max_value=data['date'].max().date()
     )
     
-
     if len(date_range) == 2:
         start_date, end_date = date_range
         filtered_data = data[(data['date'].dt.date >= start_date) & (data['date'].dt.date <= end_date)]
     else:
         filtered_data = data
     
-    
     tab1, tab2, tab3, tab4 = st.tabs(["Candlestick Chart", "Trend Analysis", "Volatility Analysis", "Raw Data"])
-    
     with tab1:
         # Candlestick Chart
         st.subheader(f"Candlestick Chart - {selected_pair}")
@@ -144,14 +131,12 @@ if data is not None:
         trend_fig = px.line(filtered_data, x='date', y=['close', 'SMA_20', 'SMA_50', 'SMA_200'],
                            title=f"{selected_pair} Price and Moving Averages",
                            labels={'value': 'Rate', 'variable': 'Indicator'})
-        
         trend_fig.update_layout(height=600)
         st.plotly_chart(trend_fig, use_container_width=True)
         
         # Period performance
         period_return = ((filtered_data['close'].iloc[-1] - filtered_data['close'].iloc[0]) / 
                          filtered_data['close'].iloc[0]) * 100
-        
         st.info(f"Period Performance: {period_return:.2f}%")
     
     with tab3:
@@ -162,7 +147,6 @@ if data is not None:
         volatility_fig = px.bar(filtered_data, x='date', y='daily_change_pct',
                                title=f"{selected_pair} Daily Price Change %",
                                labels={'daily_change_pct': 'Daily Change %'})
-        
         volatility_fig.update_layout(height=400)
         st.plotly_chart(volatility_fig, use_container_width=True)
         
@@ -183,9 +167,7 @@ if data is not None:
             monthly_vol_fig = px.bar(monthly_volatility, x='month', y='daily_range_pct',
                                      title="Average Monthly Volatility",
                                      labels={'daily_range_pct': 'Avg Daily Range %', 'month': 'Month'})
-            
             st.plotly_chart(monthly_vol_fig, use_container_width=True)
-    
     with tab4:
         
         st.subheader(f"Raw Data - {selected_pair}")
@@ -248,4 +230,4 @@ if data is not None:
             st.plotly_chart(actual_fig, use_container_width=True)
 
 st.markdown("---")
-st.markdown("Created with Streamlit · Data from Alpha Vantage API") 
+st.markdown("") 
