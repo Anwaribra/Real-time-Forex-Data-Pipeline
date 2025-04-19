@@ -391,3 +391,11 @@ Dag run start:2025-04-18 23:51:50.769159+00:00 end:2025-04-19 00:00:43.654982+00
 [2025-04-19T02:00:43.659+0200] {dag.py:4180} INFO - Setting next_dagrun for forex_pipeline to 2025-04-18T00:00:00+00:00, run_after=2025-04-19T00:00:00+00:00
 [2025-04-19T02:00:44.590+0200] {dag.py:4180} INFO - Setting next_dagrun for forex_pipeline to 2025-04-19T00:00:00+00:00, run_after=2025-04-20T00:00:00+00:00
 [2025-04-19T02:05:05.919+0200] {scheduler_job_runner.py:1949} INFO - Adopting or resetting orphaned tasks for active dag runs
+[2025-04-19T02:07:18.467+0200] {scheduler_job_runner.py:272} INFO - Exiting gracefully upon receiving signal 15
+[2025-04-19T02:07:19.489+0200] {process_utils.py:132} INFO - Sending Signals.SIGTERM to group 640200. PIDs of all processes in the group: [640200]
+[2025-04-19T02:07:19.490+0200] {process_utils.py:87} INFO - Sending the signal Signals.SIGTERM to group 640200
+[2025-04-19T02:07:19.586+0200] {process_utils.py:80} INFO - Process psutil.Process(pid=640200, status='terminated', exitcode=0, started='01:50:02') (640200) terminated with exit code 0
+[2025-04-19T02:07:19.612+0200] {process_utils.py:132} INFO - Sending Signals.SIGTERM to group 640200. PIDs of all processes in the group: []
+[2025-04-19T02:07:19.613+0200] {process_utils.py:87} INFO - Sending the signal Signals.SIGTERM to group 640200
+[2025-04-19T02:07:19.613+0200] {process_utils.py:101} INFO - Sending the signal Signals.SIGTERM to process 640200 as process group is missing.
+[2025-04-19T02:07:19.617+0200] {scheduler_job_runner.py:1029} INFO - Exited execute loop

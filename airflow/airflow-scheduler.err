@@ -20,3 +20,7 @@
 /home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/snowflake/connector/options.py:108 UserWarning: You have an incompatible version of 'pyarrow' installed (19.0.1), please install a version that adheres to: 'pyarrow<19.0.0; extra == "pandas"'
 /home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/snowflake/connector/options.py:108 UserWarning: You have an incompatible version of 'pyarrow' installed (19.0.1), please install a version that adheres to: 'pyarrow<19.0.0; extra == "pandas"'
 /home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/snowflake/connector/options.py:108 UserWarning: You have an incompatible version of 'pyarrow' installed (19.0.1), please install a version that adheres to: 'pyarrow<19.0.0; extra == "pandas"'
+[2025-04-19 02:07:18 +0200] [640202] [INFO] Worker exiting (pid: 640202)
+[2025-04-19 02:07:18 +0200] [640197] [INFO] Handling signal: term
+[2025-04-19 02:07:18 +0200] [640201] [INFO] Worker exiting (pid: 640201)
+[2025-04-19 02:07:18 +0200] [640197] [INFO] Shutting down: Master
