@@ -2,7 +2,7 @@
 
 ## Overview
 
-A comprehensive data engineering solution that fetches, processes, and analyzes real-time currency exchange rates. The pipeline ingests data from the Alpha Vantage API, processes it through a multi-stage ETL workflow, and stores it in a Snowflake data warehouse. The entire process is orchestrated using Apache Airflow with full monitoring and error handling.
+A comprehensive data analytics engineering solution that fetches, processes, and analyzes real-time currency exchange rates. The pipeline ingests data from the Alpha Vantage API, processes it through a multi-stage ETL workflow, and stores it in a Snowflake data warehouse. The entire process is orchestrated using Apache Airflow with full monitoring and error handling.
 
 ## Pipeline Architecture
 
