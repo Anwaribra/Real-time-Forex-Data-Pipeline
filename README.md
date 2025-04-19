@@ -23,7 +23,7 @@ A comprehensive data analytics engineering solution that fetches, processes, and
 
 ## Architecture
 
-The data pipeline follows a modern data engineering architecture:
+The data pipeline follows a modern data analytics engineering architecture:
 
 1. **Data Ingestion Layer**: Python scripts connect to Alpha Vantage API and fetch forex data
 2. **Processing Layer**: ETL processes transform raw data
