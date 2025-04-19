@@ -87,7 +87,7 @@ The pipeline leverages Snowflake's cloud data warehouse capabilities.
 
 
 ## Airflow DAG
-The Airflow DAG consists of six main tasks:
+The Airflow DAG consists of seven main tasks:
 
 ![Airflow DAG](config/icon/Dags.png)
 
