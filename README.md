@@ -1,87 +1,100 @@
-# Real-time Data Pipeline
+# Real-time Forex Data Pipeline
 
-## Project Overview
-A data pipeline project that fetches real-time currency exchange rates from [Alpha Vantage API](https://www.alphavantage.co), processes the data, and stores it in Snowflake data warehouse. The pipeline is orchestrated using Apache Airflow and can also be run in Docker containers.
+## Overview
 
+A comprehensive data engineering solution that fetches, processes, and analyzes real-time currency exchange rates. The pipeline ingests data from the Alpha Vantage API, processes it through a multi-stage ETL workflow, and stores it in a Snowflake data warehouse. The entire process is orchestrated using Apache Airflow with full monitoring and error handling.
 
 ## Pipeline Architecture
 
-![Pipeline Architecture](config/icon/Pipelinearchitecture.png)
+![Pipeline Architecture](config/icon/Pipelinearchitecture.png) 
 
 
-## Project Structure
+## Key Features
+
+- **Real-time Data Ingestion**: Automated fetching of currency exchange rates from Alpha Vantage API
+- **Historical Data Analysis**: Collection and processing of historical forex data
+- **ETL Pipeline**: Multi-layer data transformation (bronze, silver, gold)
+- **Data Warehouse**: Snowflake integration with optimized schema design
+- **Workflow Orchestration**: Apache Airflow DAGs with dependency management
+- **Containerization**: Docker setup for consistent development and deployment
+- **Interactive Visualization**: Streamlit dashboards for real-time data analysis
+- **Multi-currency Support**: Handles multiple currency pairs (EUR/USD, EUR/EGP, USD/EGP)
+- **Error Handling**: Robust logging and fallback mechanisms
+
+## Architecture
+
+The data pipeline follows a modern data engineering architecture:
+
+1. **Data Ingestion Layer**: Python scripts connect to Alpha Vantage API and fetch forex data
+2. **Processing Layer**: ETL processes transform raw data
+3. **Storage Layer**: Processed data is stored in Snowflake data warehouse
+4. **Orchestration Layer**: Apache Airflow manages the entire workflow
+5. **Visualization Layer**: Streamlit dashboards for data analysis and monitoring
+
+### Data Flow
 ```
-Real-time-Data-Pipeline/
-├── config/                    
-│   └── config.json           
-├── dags/                     
-│   └── dags/
-│       └── forex_pipeline_dag.py
-├── data/                     
-├── data_cleaning/             
-│   └── data_cleaning.ipynb
-├── data_ingestion/           
-│   ├── fetch_data.py         
-│   ├── fetch_historical_data.py 
-│   ├── cleanup.py            
-│   └── __init__.py
-├── data_storage/             
-│   ├── save_to_snowflake.py 
-│   ├── simplified_storage.py                      
-├── Dockerfile               
-├── docker-compose.yaml      
-└── requirements.txt          
+API Source → Data Ingestion → Data Processing → Snowflake DWH → Analytics Dashboard
 ```
 
-## Technologies Used
-- Python 3.9
-- Apache Airflow 2.7.1
-- Snowflake
-- Alpha Vantage API
-- Docker
-- Pandas & NumPy
+## Technology Stack
 
-  
-## Features
-- Real-time forex data fetching
-- Historical data collection
-- Data processing and cleaning
-- Snowflake data warehouse integration
-- Local storage fallback (JSON/CSV)
-- Apache Airflow task scheduling
-- Docker containerization
-- Support for multiple currency pairs
-- Rate viewing utility
+- **Programming**: Python 3.9+
+- **Orchestration**: Apache Airflow 2.7.1
+- **Data Warehouse**: Snowflake
+- **Data Processing**: Pandas, NumPy
+- **API Integration**: Requests, Alpha Vantage API
+- **Containerization**: Docker, Docker Compose
+- **Visualization**: Streamlit, Plotly, Power BI
+- **Database Connectivity**: SQLAlchemy, Snowflake Connector
+- **Development**: Pytest, Black, Flake8
 
-  
-## Pipeline Architecture
-### Snowflake Compute Warehouse
-The pipeline uses a dedicated compute warehouse in Snowflake:
 
-![Snowflake Compute Warehouse](config/icon/DWH.png)
+
+
+
+## Dashboard
+
+The project includes interactive Streamlit dashboards for data visualization and analysis.
+
+### Live Demo
+**[View Live Dashboard](https://anwaribra-real-time-data-pipeline-dashboard-93ffoi.streamlit.app/)**
+
+### Features
+- Candlestick charts for forex price movements
+- Technical indicators (Moving Averages, RSI, MACD)
+- Volatility analysis
+- Currency pair comparisons
+- Data export capabilities
+
+
+
+
 ## Snowflake Integration
-The pipeline creates the following in Snowflake:
-- Database (if not exists)
-- Schema (if not exists)
-- FOREX_RATES table with columns:
-  - from_currency
-  - to_currency
-  - exchange_rate
-  - last_refreshed
-  - timestamp
-  - inserted_at
 
-The data pipeline follows this architecture in Snowflake:
+The pipeline leverages Snowflake's cloud data warehouse capabilities.
 
-1. `FOREX_STAGE` - Initial data ingestion stage
-2. `FOREX_RATES_STAGE` - Transformation stage before loading to final table
-3. `FOREX_RATES` - Final table for storing the processed data
+### Architecture
+- **Database**: FOREX_DATA
+- **Schemas**: PUBLIC, BRONZE, SILVER, GOLD
+- **Main Tables/Views**:
+  - FOREX_RATES - Raw exchange rate data
+  - FOREX_RATES_ANALYTICS - Processed analytical data
+  - VOLATILITY_METRICS - Volatility aggregations
+  - TECHNICAL_ANALYSIS - Technical indicators
+  
+![Snowflake Compute Warehouse](config/icon/DWH.jpg)
+
+
 
 ## Airflow DAG
-The Airflow DAG consists of three main tasks:
+The Airflow DAG consists of six main tasks:
 
 ![Airflow DAG](config/icon/Dags.png)
 
 1. `fetch_forex_rates` - Python operator that fetches data from Alpha Vantage API
-2. `clean_data` - Cleans and transforms data using PapermillOperator.
-3. `process_and_store_data` - Python operator that processes and stores data in Snowflake
+2. `process_and_store_data` - Python operator that processes and stores data
+3. `update_snowflake` - Updates Snowflake with new data
+4. `bronze_layer_processing` - Processes raw data in Snowflake
+5. `silver_layer_processing` - Transforms and validates data
+6. `gold_layer_processing` - Creates analytics tables
+7. `update_dashboard` - Updates the dashboard with latest data

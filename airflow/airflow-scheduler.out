@@ -1,0 +1,393 @@
+[2025-04-19T01:50:02.982+0200] {executor_loader.py:258} INFO - Loaded executor: SequentialExecutor
+[2025-04-19T01:50:03.119+0200] {scheduler_job_runner.py:950} INFO - Starting the scheduler
+[2025-04-19T01:50:03.120+0200] {scheduler_job_runner.py:957} INFO - Processing each file at most -1 times
+[2025-04-19T01:50:03.145+0200] {manager.py:174} INFO - Launched DagFileProcessorManager with pid: 640200
+[2025-04-19T01:50:03.150+0200] {scheduler_job_runner.py:1949} INFO - Adopting or resetting orphaned tasks for active dag runs
+[2025-04-19T01:50:03.158+0200] {settings.py:63} INFO - Configured default timezone Timezone('UTC')
+[2025-04-19T01:50:03.572+0200] {manager.py:406} WARNING - Because we cannot use more than 1 thread (parsing_processes = 2) when using sqlite. So we set parallelism to 1.
+[2025-04-19T01:51:50.753+0200] {dag.py:4180} INFO - Setting next_dagrun for forex_pipeline to 2025-04-18T00:00:00+00:00, run_after=2025-04-19T00:00:00+00:00
+Dag run  in running state
+Dag information Queued at: 2025-04-18 23:51:50.737107+00:00 hash info: 7c116b7423067fedd9682324de987bd8
+[2025-04-19T01:51:50.820+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:51:50.820+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:51:50.820+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:51:50.823+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-17T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:51:50.823+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='fetch_forex_rates', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 7 and queue default
+[2025-04-19T01:51:50.823+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'fetch_forex_rates', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:51:50.829+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'fetch_forex_rates', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:51:53.097+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:51:53.789+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:51:53.796+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:51:53.797+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:51:53.830+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:51:53.833+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:51:53.956+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:51:54.003+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-17T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T01:51:54.861+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='fetch_forex_rates', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:51:54.871+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=fetch_forex_rates, run_id=scheduled__2025-04-17T00:00:00+00:00, map_index=-1, run_start_date=2025-04-18 23:51:54.060372+00:00, run_end_date=2025-04-18 23:51:54.228469+00:00, run_duration=0.168097, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=3, pool=default_pool, queue=default, priority_weight=7, operator=PythonOperator, queued_dttm=2025-04-18 23:51:50.821635+00:00, queued_by_job_id=2, pid=643071
+[2025-04-19T01:51:55.059+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:51:55.060+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:51:55.061+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:51:55.063+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-17T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:51:55.064+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='process_and_store_data', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 6 and queue default
+[2025-04-19T01:51:55.064+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'process_and_store_data', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:51:55.070+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'process_and_store_data', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:51:58.658+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:51:59.338+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:51:59.342+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:51:59.343+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:51:59.373+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:51:59.377+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:51:59.477+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:51:59.523+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-17T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:00.817+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='process_and_store_data', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:00.826+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=process_and_store_data, run_id=scheduled__2025-04-17T00:00:00+00:00, map_index=-1, run_start_date=2025-04-18 23:51:59.588938+00:00, run_end_date=2025-04-18 23:52:00.001900+00:00, run_duration=0.412962, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=4, pool=default_pool, queue=default, priority_weight=6, operator=PythonOperator, queued_dttm=2025-04-18 23:51:55.061915+00:00, queued_by_job_id=2, pid=643179
+[2025-04-19T01:52:01.166+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:52:01.167+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:52:01.169+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:52:01.172+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-17T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:52:01.172+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='update_snowflake', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 5 and queue default
+[2025-04-19T01:52:01.175+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_snowflake', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:01.225+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_snowflake', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:04.357+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:52:04.983+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:04.989+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:52:04.990+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:05.047+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:05.053+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:05.171+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:52:05.221+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-17T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:06.302+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='update_snowflake', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:06.323+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=update_snowflake, run_id=scheduled__2025-04-17T00:00:00+00:00, map_index=-1, run_start_date=2025-04-18 23:52:05.292817+00:00, run_end_date=2025-04-18 23:52:05.491742+00:00, run_duration=0.198925, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=5, pool=default_pool, queue=default, priority_weight=5, operator=PythonOperator, queued_dttm=2025-04-18 23:52:01.169980+00:00, queued_by_job_id=2, pid=643309
+Dag run  in running state
+Dag information Queued at: 2025-04-18 23:52:04.600279+00:00 hash info: 7c116b7423067fedd9682324de987bd8
+[2025-04-19T01:52:06.764+0200] {scheduler_job_runner.py:435} INFO - 2 tasks up for execution:
+	<TaskInstance: forex_pipeline.fetch_forex_rates manual__2025-04-18T23:52:04+00:00 [scheduled]>
+	<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:52:06.766+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:52:06.766+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 1/16 running and queued tasks
+[2025-04-19T01:52:06.767+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.fetch_forex_rates manual__2025-04-18T23:52:04+00:00 [scheduled]>
+	<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:52:06.772+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.fetch_forex_rates manual__2025-04-18T23:52:04+00:00 [scheduled]>, <TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:52:06.773+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='fetch_forex_rates', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 7 and queue default
+[2025-04-19T01:52:06.773+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'fetch_forex_rates', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:06.774+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 4 and queue default
+[2025-04-19T01:52:06.774+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:06.788+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'fetch_forex_rates', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:08.767+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:52:09.262+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:09.266+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:52:09.266+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:09.291+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:09.294+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:09.356+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:52:09.387+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.fetch_forex_rates manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:10.139+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:12.984+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:52:13.514+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:13.519+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:52:13.520+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:13.544+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:13.547+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:13.633+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:52:13.671+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:14.499+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='fetch_forex_rates', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:14.500+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:14.515+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=bronze_layer_processing, run_id=scheduled__2025-04-17T00:00:00+00:00, map_index=-1, run_start_date=2025-04-18 23:52:13.715745+00:00, run_end_date=2025-04-18 23:52:13.887599+00:00, run_duration=0.171854, state=up_for_retry, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=7, pool=default_pool, queue=default, priority_weight=4, operator=SnowflakeSqlApiOperator, queued_dttm=2025-04-18 23:52:06.768727+00:00, queued_by_job_id=2, pid=643524
+[2025-04-19T01:52:14.516+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=fetch_forex_rates, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:52:09.432592+00:00, run_end_date=2025-04-18 23:52:09.585008+00:00, run_duration=0.152416, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=6, pool=default_pool, queue=default, priority_weight=7, operator=PythonOperator, queued_dttm=2025-04-18 23:52:06.768727+00:00, queued_by_job_id=2, pid=643399
+[2025-04-19T01:52:15.214+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.process_and_store_data manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:52:15.215+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:52:15.215+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.process_and_store_data manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:52:15.219+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.process_and_store_data manual__2025-04-18T23:52:04+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:52:15.220+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='process_and_store_data', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 6 and queue default
+[2025-04-19T01:52:15.220+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'process_and_store_data', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:15.227+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'process_and_store_data', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:17.264+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:52:17.856+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:17.871+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:52:17.872+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:17.919+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:17.942+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:18.111+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:52:18.198+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.process_and_store_data manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:19.517+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='process_and_store_data', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:19.529+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=process_and_store_data, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:52:18.285126+00:00, run_end_date=2025-04-18 23:52:18.554948+00:00, run_duration=0.269822, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=8, pool=default_pool, queue=default, priority_weight=6, operator=PythonOperator, queued_dttm=2025-04-18 23:52:15.216676+00:00, queued_by_job_id=2, pid=643599
+[2025-04-19T01:52:19.939+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.update_snowflake manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:52:19.940+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:52:19.941+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.update_snowflake manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:52:19.944+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.update_snowflake manual__2025-04-18T23:52:04+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:52:19.945+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='update_snowflake', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 5 and queue default
+[2025-04-19T01:52:19.945+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_snowflake', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:19.952+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_snowflake', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:21.956+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:52:22.656+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:22.663+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:52:22.664+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:22.703+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:22.708+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:22.802+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:52:22.871+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.update_snowflake manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:25.426+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='update_snowflake', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:25.440+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=update_snowflake, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:52:23.096180+00:00, run_end_date=2025-04-18 23:52:24.141419+00:00, run_duration=1.045239, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=9, pool=default_pool, queue=default, priority_weight=5, operator=PythonOperator, queued_dttm=2025-04-18 23:52:19.942345+00:00, queued_by_job_id=2, pid=643717
+[2025-04-19T01:52:25.901+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.bronze_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:52:25.901+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:52:25.902+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.bronze_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:52:25.904+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.bronze_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:52:25.905+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 4 and queue default
+[2025-04-19T01:52:25.905+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:26.088+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:52:28.738+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:52:29.214+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:29.218+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:52:29.218+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:52:29.239+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:29.242+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:52:29.302+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:52:29.334+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.bronze_layer_processing manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:52:30.072+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:52:30.079+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=bronze_layer_processing, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:52:29.378446+00:00, run_end_date=2025-04-18 23:52:29.514787+00:00, run_duration=0.136341, state=up_for_retry, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=10, pool=default_pool, queue=default, priority_weight=4, operator=SnowflakeSqlApiOperator, queued_dttm=2025-04-18 23:52:25.903308+00:00, queued_by_job_id=2, pid=643830
+[2025-04-19T01:53:10.217+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.silver_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:53:10.217+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:53:10.217+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.silver_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:53:10.219+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.silver_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:53:10.220+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='silver_layer_processing', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 3 and queue default
+[2025-04-19T01:53:10.220+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'silver_layer_processing', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:53:10.225+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'silver_layer_processing', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:53:12.667+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:53:13.140+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:53:13.144+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:53:13.145+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:53:13.167+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:53:13.170+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:53:13.232+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:53:13.267+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.silver_layer_processing manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:53:14.034+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='silver_layer_processing', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:53:14.043+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=silver_layer_processing, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:53:13.309462+00:00, run_end_date=2025-04-18 23:53:13.457429+00:00, run_duration=0.147967, state=up_for_retry, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=11, pool=default_pool, queue=default, priority_weight=3, operator=SnowflakeSqlApiOperator, queued_dttm=2025-04-18 23:53:10.218406+00:00, queued_by_job_id=2, pid=644882
+[2025-04-19T01:53:15.585+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.gold_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:53:15.585+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:53:15.586+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.gold_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:53:15.588+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.gold_layer_processing manual__2025-04-18T23:52:04+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:53:15.589+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='gold_layer_processing', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 2 and queue default
+[2025-04-19T01:53:15.589+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'gold_layer_processing', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:53:15.595+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'gold_layer_processing', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:53:17.798+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:53:18.306+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:53:18.313+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:53:18.313+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:53:18.339+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:53:18.343+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:53:18.402+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:53:18.433+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.gold_layer_processing manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:53:19.285+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='gold_layer_processing', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:53:19.290+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=gold_layer_processing, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:53:18.478318+00:00, run_end_date=2025-04-18 23:53:18.670663+00:00, run_duration=0.192345, state=up_for_retry, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=12, pool=default_pool, queue=default, priority_weight=2, operator=SnowflakeSqlApiOperator, queued_dttm=2025-04-18 23:53:15.586976+00:00, queued_by_job_id=2, pid=645009
+[2025-04-19T01:53:20.902+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.update_dashboard manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:53:20.902+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:53:20.903+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.update_dashboard manual__2025-04-18T23:52:04+00:00 [scheduled]>
+[2025-04-19T01:53:20.905+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.update_dashboard manual__2025-04-18T23:52:04+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:53:20.905+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='update_dashboard', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 1 and queue default
+[2025-04-19T01:53:20.906+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_dashboard', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:53:20.911+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_dashboard', 'manual__2025-04-18T23:52:04+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:53:23.062+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:53:23.612+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:53:23.619+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:53:23.620+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:53:23.656+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:53:23.660+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:53:23.771+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:53:23.819+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.update_dashboard manual__2025-04-18T23:52:04+00:00 [queued]> on host Anwar
+[2025-04-19T01:53:24.897+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='update_dashboard', run_id='manual__2025-04-18T23:52:04+00:00', try_number=1, map_index=-1)
+[2025-04-19T01:53:24.904+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=update_dashboard, run_id=manual__2025-04-18T23:52:04+00:00, map_index=-1, run_start_date=2025-04-18 23:53:23.886490+00:00, run_end_date=2025-04-18 23:53:24.231643+00:00, run_duration=0.345153, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=13, pool=default_pool, queue=default, priority_weight=1, operator=PythonOperator, queued_dttm=2025-04-18 23:53:20.903830+00:00, queued_by_job_id=2, pid=645153
+[2025-04-19T01:53:25.204+0200] {dagrun.py:854} INFO - Marking run <DagRun forex_pipeline @ 2025-04-18 23:52:04+00:00: manual__2025-04-18T23:52:04+00:00, state:running, queued_at: 2025-04-18 23:52:04.600279+00:00. externally triggered: True> successful
+Dag run in success state
+Dag run start:2025-04-18 23:52:06.653264+00:00 end:2025-04-18 23:53:25.205848+00:00
+[2025-04-19T01:53:25.206+0200] {dagrun.py:905} INFO - DagRun Finished: dag_id=forex_pipeline, execution_date=2025-04-18 23:52:04+00:00, run_id=manual__2025-04-18T23:52:04+00:00, run_start_date=2025-04-18 23:52:06.653264+00:00, run_end_date=2025-04-18 23:53:25.205848+00:00, run_duration=78.552584, state=success, external_trigger=True, run_type=manual, data_interval_start=2025-04-17 00:00:00+00:00, data_interval_end=2025-04-18 00:00:00+00:00, dag_hash=7c116b7423067fedd9682324de987bd8
+[2025-04-19T01:55:03.340+0200] {scheduler_job_runner.py:1949} INFO - Adopting or resetting orphaned tasks for active dag runs
+[2025-04-19T01:57:14.019+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:57:14.020+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T01:57:14.020+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [scheduled]>
+[2025-04-19T01:57:14.022+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T01:57:14.022+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=2, map_index=-1) to SequentialExecutor with priority 4 and queue default
+[2025-04-19T01:57:14.023+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:57:14.028+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'scheduled__2025-04-17T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T01:57:17.656+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T01:57:18.503+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:57:18.510+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T01:57:18.511+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T01:57:18.552+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:57:18.557+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T01:57:18.701+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T01:57:18.773+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-17T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T01:57:20.242+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='scheduled__2025-04-17T00:00:00+00:00', try_number=2, map_index=-1)
+[2025-04-19T01:57:20.256+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=bronze_layer_processing, run_id=scheduled__2025-04-17T00:00:00+00:00, map_index=-1, run_start_date=2025-04-18 23:57:18.883972+00:00, run_end_date=2025-04-18 23:57:19.302277+00:00, run_duration=0.418305, state=up_for_retry, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=2, max_tries=2, job_id=14, pool=default_pool, queue=default, priority_weight=4, operator=SnowflakeSqlApiOperator, queued_dttm=2025-04-18 23:57:14.021114+00:00, queued_by_job_id=2, pid=650454
+[2025-04-19T02:00:01.501+0200] {dag.py:4180} INFO - Setting next_dagrun for forex_pipeline to 2025-04-19T00:00:00+00:00, run_after=2025-04-20T00:00:00+00:00
+Dag run  in running state
+Dag information Queued at: 2025-04-19 00:00:01.484682+00:00 hash info: 7c116b7423067fedd9682324de987bd8
+[2025-04-19T02:00:01.551+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:01.551+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T02:00:01.552+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:01.554+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-18T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T02:00:01.555+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='fetch_forex_rates', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 7 and queue default
+[2025-04-19T02:00:01.555+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'fetch_forex_rates', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:01.561+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'fetch_forex_rates', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:04.226+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T02:00:04.919+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:04.923+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T02:00:04.923+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:04.944+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:04.948+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:05.009+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T02:00:05.043+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.fetch_forex_rates scheduled__2025-04-18T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T02:00:05.718+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='fetch_forex_rates', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T02:00:05.724+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=fetch_forex_rates, run_id=scheduled__2025-04-18T00:00:00+00:00, map_index=-1, run_start_date=2025-04-19 00:00:05.089345+00:00, run_end_date=2025-04-19 00:00:05.211533+00:00, run_duration=0.122188, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=15, pool=default_pool, queue=default, priority_weight=7, operator=PythonOperator, queued_dttm=2025-04-19 00:00:01.553057+00:00, queued_by_job_id=2, pid=654194
+[2025-04-19T02:00:05.747+0200] {scheduler_job_runner.py:1949} INFO - Adopting or resetting orphaned tasks for active dag runs
+[2025-04-19T02:00:06.044+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:06.044+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T02:00:06.044+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:06.046+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-18T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T02:00:06.046+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='process_and_store_data', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 6 and queue default
+[2025-04-19T02:00:06.046+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'process_and_store_data', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:06.052+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'process_and_store_data', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:07.958+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T02:00:08.468+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:08.472+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T02:00:08.473+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:08.493+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:08.496+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:08.570+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T02:00:08.617+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.process_and_store_data scheduled__2025-04-18T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T02:00:09.690+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='process_and_store_data', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T02:00:09.696+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=process_and_store_data, run_id=scheduled__2025-04-18T00:00:00+00:00, map_index=-1, run_start_date=2025-04-19 00:00:08.684092+00:00, run_end_date=2025-04-19 00:00:08.997370+00:00, run_duration=0.313278, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=16, pool=default_pool, queue=default, priority_weight=6, operator=PythonOperator, queued_dttm=2025-04-19 00:00:06.045345+00:00, queued_by_job_id=2, pid=654290
+[2025-04-19T02:00:10.016+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:10.017+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T02:00:10.018+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:10.022+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-18T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T02:00:10.023+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='update_snowflake', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 5 and queue default
+[2025-04-19T02:00:10.024+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_snowflake', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:10.035+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'update_snowflake', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:11.749+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T02:00:12.211+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:12.215+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T02:00:12.216+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:12.237+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:12.239+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:12.295+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T02:00:12.327+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.update_snowflake scheduled__2025-04-18T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T02:00:13.180+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='update_snowflake', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T02:00:13.187+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=update_snowflake, run_id=scheduled__2025-04-18T00:00:00+00:00, map_index=-1, run_start_date=2025-04-19 00:00:12.377766+00:00, run_end_date=2025-04-19 00:00:12.537145+00:00, run_duration=0.159379, state=success, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=17, pool=default_pool, queue=default, priority_weight=5, operator=PythonOperator, queued_dttm=2025-04-19 00:00:10.020068+00:00, queued_by_job_id=2, pid=654359
+[2025-04-19T02:00:13.376+0200] {scheduler_job_runner.py:435} INFO - 1 tasks up for execution:
+	<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:13.376+0200] {scheduler_job_runner.py:507} INFO - DAG forex_pipeline has 0/16 running and queued tasks
+[2025-04-19T02:00:13.376+0200] {scheduler_job_runner.py:646} INFO - Setting the following tasks to queued state:
+	<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-18T00:00:00+00:00 [scheduled]>
+[2025-04-19T02:00:13.378+0200] {scheduler_job_runner.py:748} INFO - Trying to enqueue tasks: [<TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-18T00:00:00+00:00 [scheduled]>] for executor: SequentialExecutor(parallelism=32)
+[2025-04-19T02:00:13.378+0200] {scheduler_job_runner.py:692} INFO - Sending TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1) to SequentialExecutor with priority 4 and queue default
+[2025-04-19T02:00:13.378+0200] {base_executor.py:169} INFO - Adding to queue: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:13.383+0200] {sequential_executor.py:84} INFO - Executing command: ['airflow', 'tasks', 'run', 'forex_pipeline', 'bronze_layer_processing', 'scheduled__2025-04-18T00:00:00+00:00', '--local', '--subdir', 'DAGS_FOLDER/forex_pipeline_dag.py']
+[2025-04-19T02:00:16.354+0200] {dagbag.py:588} INFO - Filling up the DagBag from /home/anwar/Real-time-Data-Pipeline/airflow/dags/forex_pipeline_dag.py
+[2025-04-19T02:00:16.858+0200] {example_kubernetes_executor.py:39} WARNING - The example_kubernetes_executor example DAG requires the kubernetes provider. Please install it with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:16.862+0200] {example_local_kubernetes_executor.py:40} WARNING - Could not import DAGs in example_local_kubernetes_executor.py
+Traceback (most recent call last):
+  File "/home/anwar/anaconda3/envs/airflow_env/lib/python3.9/site-packages/airflow/example_dags/example_local_kubernetes_executor.py", line 38, in <module>
+    from kubernetes.client import models as k8s
+ModuleNotFoundError: No module named 'kubernetes'
+[2025-04-19T02:00:16.862+0200] {example_local_kubernetes_executor.py:41} WARNING - Install Kubernetes dependencies with: pip install apache-airflow[cncf.kubernetes]
+[2025-04-19T02:00:16.887+0200] {example_python_decorator.py:80} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:16.890+0200] {example_python_operator.py:93} WARNING - The virtalenv_python example task requires virtualenv, please install it.
+[2025-04-19T02:00:16.953+0200] {tutorial_taskflow_api_virtualenv.py:29} WARNING - The tutorial_taskflow_api_virtualenv example DAG requires virtualenv, please install it.
+[2025-04-19T02:00:16.999+0200] {task_command.py:467} INFO - Running <TaskInstance: forex_pipeline.bronze_layer_processing scheduled__2025-04-18T00:00:00+00:00 [queued]> on host Anwar
+[2025-04-19T02:00:17.934+0200] {scheduler_job_runner.py:776} INFO - Received executor event with state success for task instance TaskInstanceKey(dag_id='forex_pipeline', task_id='bronze_layer_processing', run_id='scheduled__2025-04-18T00:00:00+00:00', try_number=1, map_index=-1)
+[2025-04-19T02:00:17.943+0200] {scheduler_job_runner.py:813} INFO - TaskInstance Finished: dag_id=forex_pipeline, task_id=bronze_layer_processing, run_id=scheduled__2025-04-18T00:00:00+00:00, map_index=-1, run_start_date=2025-04-19 00:00:17.067583+00:00, run_end_date=2025-04-19 00:00:17.265995+00:00, run_duration=0.198412, state=up_for_retry, executor=SequentialExecutor(parallelism=32), executor_state=success, try_number=1, max_tries=2, job_id=18, pool=default_pool, queue=default, priority_weight=4, operator=SnowflakeSqlApiOperator, queued_dttm=2025-04-19 00:00:13.377373+00:00, queued_by_job_id=2, pid=654447
+[2025-04-19T02:00:43.654+0200] {dagrun.py:854} INFO - Marking run <DagRun forex_pipeline @ 2025-04-17 00:00:00+00:00: scheduled__2025-04-17T00:00:00+00:00, state:running, queued_at: 2025-04-18 23:51:50.737107+00:00. externally triggered: False> successful
+Dag run in success state
+Dag run start:2025-04-18 23:51:50.769159+00:00 end:2025-04-19 00:00:43.654982+00:00
+[2025-04-19T02:00:43.655+0200] {dagrun.py:905} INFO - DagRun Finished: dag_id=forex_pipeline, execution_date=2025-04-17 00:00:00+00:00, run_id=scheduled__2025-04-17T00:00:00+00:00, run_start_date=2025-04-18 23:51:50.769159+00:00, run_end_date=2025-04-19 00:00:43.654982+00:00, run_duration=532.885823, state=success, external_trigger=False, run_type=scheduled, data_interval_start=2025-04-17 00:00:00+00:00, data_interval_end=2025-04-18 00:00:00+00:00, dag_hash=7c116b7423067fedd9682324de987bd8
+[2025-04-19T02:00:43.659+0200] {dag.py:4180} INFO - Setting next_dagrun for forex_pipeline to 2025-04-18T00:00:00+00:00, run_after=2025-04-19T00:00:00+00:00
+[2025-04-19T02:00:44.590+0200] {dag.py:4180} INFO - Setting next_dagrun for forex_pipeline to 2025-04-19T00:00:00+00:00, run_after=2025-04-20T00:00:00+00:00
+[2025-04-19T02:05:05.919+0200] {scheduler_job_runner.py:1949} INFO - Adopting or resetting orphaned tasks for active dag runs

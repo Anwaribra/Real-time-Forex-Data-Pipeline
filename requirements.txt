@@ -1,5 +1,6 @@
 # Core Dependencies
 apache-airflow==2.7.1
+apache-airflow-providers-snowflake==5.1.0
 pandas==2.1.1
 numpy==1.26.4
 requests==2.31.0

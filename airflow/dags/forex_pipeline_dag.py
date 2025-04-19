@@ -1,0 +1,1 @@
+/home/anwar/Real-time-Data-Pipeline/dags/dags/forex_pipeline_dag.py
