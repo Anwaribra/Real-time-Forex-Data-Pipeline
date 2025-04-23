@@ -59,6 +59,14 @@ The project includes interactive Streamlit dashboards for data visualization and
 ### Live Demo
 **[View Live Dashboard](https://anwaribra-real-time-data-pipeline-dashboard-93ffoi.streamlit.app/)**
 
+### Currency Exchange Trends Visualization
+![](config/icon/newplot.png)
+
+![](config/icon/newplot(1).png)
+
+![](config/icon/newplot(2).png)
+
+[Data Workflow and Implementation Guide](config/icon/ForexDocumentation.pdf)
 ### Features
 - Candlestick charts for forex price movements
 - Technical indicators (Moving Averages, RSI, MACD)
