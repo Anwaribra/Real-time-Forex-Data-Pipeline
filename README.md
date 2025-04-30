@@ -109,7 +109,8 @@ The Airflow DAG consists of seven main tasks:
 
 
 ## Documentation 
-[Data Workflow and Implementation Guide](config/icon/ForexDocumentation.pdf) 
+
+- [Data Workflow and Implementation Guide](config/icon/ForexDocumentation.pdf)
 
  >  For any special details you can ask Our agent.  
 > Check out the full project here: [Real-time Forex Data Pipeline on DeepWiki](https://deepwiki.com/Anwaribra/Real-time-Forex-Data-Pipeline)
