@@ -66,7 +66,7 @@ The project includes interactive Streamlit dashboards for data visualization and
 
 ![](config/icon/newplot(2).png)
 
-[Data Workflow and Implementation Guide](config/icon/ForexDocumentation.pdf)
+
 ### Features
 - Candlestick charts for forex price movements
 - Technical indicators (Moving Averages, RSI, MACD)
@@ -106,3 +106,10 @@ The Airflow DAG consists of seven main tasks:
 5. `silver_layer_processing` - Transforms and validates data
 6. `gold_layer_processing` - Creates analytics tables
 7. `update_dashboard` - Updates the dashboard with latest data
+
+
+## Documentation 
+[Data Workflow and Implementation Guide](config/icon/ForexDocumentation.pdf) 
+
+ >  For any special details you can ask Our agent.  
+> Check out the full project here: [Real-time Forex Data Pipeline on DeepWiki](https://deepwiki.com/Anwaribra/Real-time-Forex-Data-Pipeline)
