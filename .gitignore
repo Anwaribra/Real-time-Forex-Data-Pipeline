@@ -75,3 +75,11 @@ airflow/plugins/
 airflow/airflow.cfg
 airflow/airflow.cfg
 airflow.cfg 
+.airflow
+.airflow/
+.airflow/logs/
+.airflow/dags/
+.airflow/data/
+.airflow/plugins/
+.airflow/airflow.cfg
+.airflow/airflow.cfg
