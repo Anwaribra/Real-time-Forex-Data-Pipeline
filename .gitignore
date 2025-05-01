@@ -44,6 +44,7 @@ wheels/
 .pytest_cache/
 .coverage
 htmlcov/
+__pycache__/ 
 
 # Virtual Environment
 .venv/
@@ -64,3 +65,13 @@ env/
 Thumbs.db
 *.log
 .directory 
+
+airflow/
+airflow/logs/
+airflow/dags/
+airflow/logs/
+airflow/data/
+airflow/plugins/
+airflow/airflow.cfg
+airflow/airflow.cfg
+airflow.cfg 
