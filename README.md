@@ -57,7 +57,11 @@ API Source → Data Ingestion → Data Processing → Snowflake DWH → Analytic
 The project includes interactive Streamlit dashboards for data visualization and analysis.
 
 ### Live Demo
-**[View Live Dashboard](https://anwaribra-real-time-data-pipeline-dashboard-93ffoi.streamlit.app/)**
+> **[Forex Analytics Dashboard](https://anwaribra-real-time-data-pipeline-dashboard-93ffoi.streamlit.app/)**
+
+
+> **[ Advanced Analytics Dashboard](https://anwaribra-real-time-data-pipeline-app-tpkgta.streamlit.app/)** 
+
 
 ### Currency Exchange Trends Visualization
 ![](config/icon/newplot.png)
